@@ -1,0 +1,2 @@
+1. pose detection
+https://github.com/CMU-Perceptual-Computing-Lab/openpose
