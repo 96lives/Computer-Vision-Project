@@ -1,0 +1,81 @@
+
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+
+ \cvprfinalcopy % *** Uncomment this line for the final submission
+
+\def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+\ifcvprfinal\pagestyle{empty}\fi
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Cheating Rock Scissor Paper}
+
+\author{Junha Chun\\
+Dept. of Electrical and Computer Engineering\\
+Seoul National University \\
+{\tt\small nikriz@snu.ac.kr}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+\and
+Dongsu Zhang\\
+Dept. of Computer Science and Engineering\\
+Seoul National University\\
+{\tt\small 96lives@snu.ac.kr}
+}
+
+\maketitle
+%\thispagestyle{empty}
+%%%%%%%% BODY TEXT
+\section{Overview}
+Rock Paper Scissors(RPS) is a simple hand game that is played all over the world instantly and with nothing. RPS is highly affected by luck, each player has equal one-third chance of win, draw, or loss according to the ‘throw’(rock, scissors, or paper) the players play. Also, there could be psychological strategies since a human cannot play true randomness. 
+\paragraph{}
+Our goal of this project is to predict opponent’s throw as fast as the program can in real-time, and win the game with high probability with computer vision techniques. We will first try with rule-based classical computer vision techniques, and then continue with machine learning models.
+
+
+%% Section 2. Paper Survey
+\section{Paper Survey}
+
+%% Section 2.1 Classical vision
+\subsection{Classical Computer Vision}
+For classical computer vision techniques, open source done by \href{https://github.com/lzane/Fingers-Detection-using-OpenCV-and-Python}{lzane} will be referenced. This open source uses background subtraction and grey scaling to detect the hand and finds contours to detect number of fingers.
+Although this model detects hands, it did not work well  due to \textbf{FILL!!!} . Also, this open source ignores the process of fingers moving. To estimate what the RPS player will throw before the pose is definitely recognizable, the moving process is needed as data.
+
+%% Section 2.2 Neural Network
+\subsection{Hand Pose Estimation with Neural Network}
+This method is available with fully open hands, and not certain if it would work well while opening the hands. \href{https://arxiv.org/pdf/1704.02224.pdf}{Hand3D} and \href{https://arxiv.org/pdf/1611.08050.pdf}{Openpose} uses deep neural networks to detect hand joints. 
+These methods detect every finger joints and hand poses but it’s not sure their running time is fast enough to be ran in real-time situations. Especially in openpose, the detection of the finger joint is made after the detection of the human body detection.
+\paragraph{}
+Both methods are basically image processing, so we should implement them in real time video. Also, in order to predict the opponent’s ‘throw’, modification of open-sourced algorithms and precise rule-based algorithm with finger numbers or joint coordinates are needed.
+
+%% Section Dataset Description
+\section{Dataset Description}
+There are lots of hand RGBD image datasets open online.
+\begin{itemize}
+\item Own filmed dataset (video and picture), asking acquaintances for a short photo. 30 people or more are estimated.
+\item \href{https://cims.nyu.edu/~tompson/NYU_Hand_Pose_Dataset.htm}{NYU hand dataset} 
+\item \href{http://icvl.ee.ic.ac.uk/hands17/challenge/}{ICVL hand dataset} 
+\item \href{https://arxiv.org/pdf/1704.02612.pdf}{BigHand 2.2M} 
+\end{itemize}
+
+\end{document}

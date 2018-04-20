@@ -112,7 +112,7 @@ while camera.isOpened():
             isFinishCal,cnt = calculateFingers(res,drawing)
             if triggerSwitch is True:
                 if isFinishCal is True and cnt <= 2:
-                    print cnt
+                    print(cnt)
                     #app('System Events').keystroke(' ')  # simulate pressing blank space
 
         cv2.imshow('output', drawing)
@@ -124,12 +124,12 @@ while camera.isOpened():
     elif k == ord('b'):  # press 'b' to capture the background
         bgModel = cv2.createBackgroundSubtractorMOG2(0, bgSubThreshold)
         isBgCaptured = 1
-        print '!!!Background Captured!!!'
+        print('!!!Background Captured!!!')
     elif k == ord('r'):  # press 'r' to reset the background
         bgModel = None
         triggerSwitch = False
         isBgCaptured = 0
-        print '!!!Reset BackGround!!!'
+        print('!!!Reset BackGround!!!')
     elif k == ord('n'):
         triggerSwitch = True
-        print '!!!Trigger On!!!'
+        print('!!!Trigger On!!!')
