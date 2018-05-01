@@ -90,7 +90,7 @@ while(1):
             ci=i  
             
     #Largest area contour
-    print contours			  
+    print(contours)
     cnts = contours[ci]
 
     #Find convex hull
