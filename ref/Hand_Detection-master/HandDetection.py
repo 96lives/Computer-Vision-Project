@@ -91,7 +91,8 @@ while(1):
             
     #Largest area contour
     print(contours)
-    cnts = contours[ci]
+    print(ci)
+    if contours != []: cnts = contours[ci]
 
     #Find convex hull
     hull = cv2.convexHull(cnts)
