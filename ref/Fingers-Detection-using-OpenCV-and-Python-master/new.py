@@ -25,7 +25,8 @@ def printThreshold(thr):
 
 
 def removeBG(frame):
-    fgmask = bgModel.apply(frame)
+    #TODO: parameter(learning rate) tuning
+    fgmask = bgModel.apply(frame, learningRate = 0.0000)
     # kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     # res = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, kernel)
 
@@ -80,14 +81,14 @@ while camera.isOpened():
         img = removeBG(frame)
         img = img[0:int(cap_region_y_end * frame.shape[0]),
                     int(cap_region_x_begin * frame.shape[1]):frame.shape[1]]  # clip the ROI
-        cv2.imshow('mask', img)
+        #cv2.imshow('mask', img)
 
         # convert the image into binary image
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (blurValue, blurValue), 0)
-        cv2.imshow('blur', blur)
+        #cv2.imshow('blur', blur)
         ret, thresh = cv2.threshold(blur, threshold, 255, cv2.THRESH_BINARY)
-        cv2.imshow('ori', thresh)
+        #cv2.imshow('ori', thresh)
 
 
         # get the coutours
@@ -110,11 +111,7 @@ while camera.isOpened():
             cv2.drawContours(drawing, [hull], 0, (0, 0, 255), 3)
 
             isFinishCal,cnt = calculateFingers(res,drawing)
-            if triggerSwitch is True:
-                if isFinishCal is True and cnt <= 2:
-                    print(cnt)
-                    #app('System Events').keystroke(' ')  # simulate pressing blank space
-
+            print(cnt)
         cv2.imshow('output', drawing)
 
     # Keyboard OP
@@ -122,7 +119,7 @@ while camera.isOpened():
     if k == 27:  # press ESC to exit
         break
     elif k == ord('b'):  # press 'b' to capture the background
-        bgModel = cv2.createBackgroundSubtractorMOG2(0, bgSubThreshold)
+        bgModel = cv2.createBackgroundSubtractorMOG2(2147483647, bgSubThreshold)
         isBgCaptured = 1
         print('!!!Background Captured!!!')
     elif k == ord('r'):  # press 'r' to reset the background
