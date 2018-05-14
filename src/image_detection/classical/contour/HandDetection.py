@@ -76,8 +76,8 @@ while(1):
     _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
     #Draw Contours
-    #cv2.drawContours(frame, cnt, -1, (122,122,0), 3)
-    #cv2.imshow('Dilation',median)
+    cv2.drawContours(frame, cnt, -1, (122,122,0), 3)
+    cv2.imshow('Dilation',median)
 
     #Find Max contour area (Assume that hand is in the frame)
     max_area=100
