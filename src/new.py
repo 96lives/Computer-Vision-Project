@@ -110,7 +110,7 @@ fourcc = cv2.VideoWriter_fourcc(*'XVID')
 #fourcc = cv2.VideoWriter_fourcc(*'WMV1')
 
 
-with open('../../data/video/label.txt','r') as f:
+with open('../data/video/label.txt','r') as f:
     num = int(f.readline())
 
 while camera.isOpened():
