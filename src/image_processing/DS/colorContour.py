@@ -6,7 +6,7 @@ eps = 1e-10
 
 # reads video from video_dir and outputs processed video to output_dir
 # returns rcs
-def detect_skin_color(video_dir, output_dir):
+def detect_hand(video_dir, output_dir):
     
     # open camera object
     cap = cv2.VideoCapture(video_dir)
@@ -23,9 +23,11 @@ def detect_skin_color(video_dir, output_dir):
         
         # flip the image
         frame = cv2.flip(frame, 0)
-        # do some image processing
-        frame = detect_hand(frame)
-        # detect hand
+
+        #detect hand with skin color
+        skin_mask = detect_skin(frame)
+        frame = morphological_transform(skin_mask)
+        # write frame
         out.write(frame)
         
 
@@ -36,7 +38,7 @@ def detect_skin_color(video_dir, output_dir):
     return rcs
 
 # outputs frame of image processed hand 
-def detect_hand(frame):
+def detect_skin(frame):
     
     # blur image
     blur = cv2.blur(frame, (5, 5))
@@ -44,9 +46,33 @@ def detect_hand(frame):
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, np.array([2,50,50]), \
             np.array([15,255,255]))
-    frame = cv2.bitwise_and(frame, frame, mask=mask)
+    skin = cv2.bitwise_and(frame, frame, mask=mask)
+
+    return skin
+
+
+def morphological_transform(frame):
     
-    return frame
+    # Kernel matrices for morphological transformation
+    kernel_square = np.ones((11,11),np.uint8)
+    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+
+    #Perform morphological transformations to filter out the background noise
+    #Dilation increase skin color area
+    #Erosion increase skin color area
+    dilation = cv2.dilate(frame, kernel_ellipse,iterations = 1)
+    erosion = cv2.erode(dilation,kernel_square,iterations = 1)
+    dilation2 = cv2.dilate(erosion,kernel_ellipse,iterations = 1)
+    filtered = cv2.medianBlur(dilation2,5)
+    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(8,8))
+    dilation2 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
+    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+    dilation3 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
+    median = cv2.medianBlur(dilation2,5)
+    ret,thresh = cv2.threshold(median,127,255,0)
+
+    return thresh
+
 
 
 # cos angle between 2 vectors
