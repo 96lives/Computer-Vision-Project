@@ -1,6 +1,6 @@
 *.iml
-.idea/*
-.data/*
+idea/
+data/
 .venv
 venv/
 .output/*

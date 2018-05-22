@@ -23,7 +23,6 @@ def FindDistance(A,B):
 data_dir = '../data/test.MOV'
 cap = cv2.VideoCapture(data_dir)
 
-
 while(cap.isOpened()):
     
     # Measure execution time
