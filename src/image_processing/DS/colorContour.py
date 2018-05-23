@@ -23,14 +23,14 @@ def detect_hand(video_dir, output_dir):
         
         # flip the image
         frame = cv2.flip(frame, 0)
+        frame = cv2.flip(frame, 1)
         
         #detect hand with skin color
         skin_mask = detect_skin(frame)
-        thresh = morphological_transform(skin_mask)
-        frame = find_contours(thresh, frame)
+        #thresh = morphological_transform(skin_mask)
         
         # write frame
-        out.write(frame)
+        out.write(skin_mask)
         
 
     out.release()
@@ -81,10 +81,10 @@ def morphological_transform(frame):
     median = cv2.medianBlur(dilation2,5)
     ret,thresh = cv2.threshold(median,127,255,0)
 
-    return thresh
+    return thresh, median
 
 
-# outputs frame of image processed hand 
+# outputs frame of skin masked 
 def detect_skin(frame):
     
     # blur image

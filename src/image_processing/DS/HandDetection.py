@@ -55,12 +55,11 @@ while(1):
     filtered = cv2.medianBlur(dilation2,5)
     kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(8,8))
     dilation2 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
-    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
-    dilation3 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
     median = cv2.medianBlur(dilation2,5)
     ret,thresh = cv2.threshold(median,127,255,0)
 
     #Find contours of the filtered frame
+    print(thresh.shape)
     _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
        #Find Max contour area (Assume that hand is in the frame)
@@ -75,7 +74,7 @@ while(1):
 
     #Draw Contours
     cv2.drawContours(frame, cnt, -1, (122,122,0), 3)
-    cv2.imshow('Dilation',median)
+    #cv2.imshow('Dilation',median)
 
     #Largest area contour
     #print(contours)
@@ -99,7 +98,7 @@ while(1):
         cv2.line(frame,start,end,[0,255,0],1)
         cv2.circle(frame,far,10,[100,255,255],3)
 
-	#Find moments of the largest contour
+    #Find moments of the largest contour
     moments = cv2.moments(cnts)
 
     #Central mass of first order moments
