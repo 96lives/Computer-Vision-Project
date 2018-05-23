@@ -23,10 +23,12 @@ def detect_hand(video_dir, output_dir):
         
         # flip the image
         frame = cv2.flip(frame, 0)
-
+        
         #detect hand with skin color
         skin_mask = detect_skin(frame)
-        frame = morphological_transform(skin_mask)
+        thresh = morphological_transform(skin_mask)
+        frame = find_contours(thresh, frame)
+        
         # write frame
         out.write(frame)
         
@@ -37,18 +39,26 @@ def detect_hand(video_dir, output_dir):
     rcs = 0
     return rcs
 
-# outputs frame of image processed hand 
-def detect_skin(frame):
+def find_contours(thresh, frame):
     
-    # blur image
-    blur = cv2.blur(frame, (5, 5))
-    
-    hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, np.array([2,50,50]), \
-            np.array([15,255,255]))
-    skin = cv2.bitwise_and(frame, frame, mask=mask)
+    _, contours, hierarchy = cv2.findContours(thresh,\
+            cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    print('contour', contours)
+    print('hierarch', heirarchy)
+    #Find Max contour area (Assume that hand is in the frame)
+    max_area=100
+    ci=0
+    for i in range(len(contours)):
+        cnt=contours[i]
+        area = cv2.contourArea(cnt)
+        if(area>max_area):
+            max_area=area
+            ci=i
 
-    return skin
+    #Draw Contours
+    frame = cv2.drawContours(frame, cnt, -1, (122,122,0), 3)
+
+    return frame
 
 
 def morphological_transform(frame):
@@ -72,6 +82,21 @@ def morphological_transform(frame):
     ret,thresh = cv2.threshold(median,127,255,0)
 
     return thresh
+
+
+# outputs frame of image processed hand 
+def detect_skin(frame):
+    
+    # blur image
+    blur = cv2.blur(frame, (5, 5))
+    
+    hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv, np.array([2,50,50]), \
+            np.array([15,255,255]))
+    skin = cv2.bitwise_and(frame, frame, mask=mask)
+
+    return skin
+
 
 
 
