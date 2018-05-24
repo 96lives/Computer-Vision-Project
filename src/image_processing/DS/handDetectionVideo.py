@@ -38,6 +38,7 @@ def detect_skin(frame):
     #cv2.imshow('skin', skin)
     return skin
 
+
 # TODO: Do more clear image transform
 def morphological_transform(frame):
     
@@ -61,7 +62,7 @@ def morphological_transform(frame):
     return thres, median
 
 
-def max_contour(thres):
+def find_max_contour(thres):
  
     _, contours, hierarchy = cv2.findContours(thres,\
             cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
@@ -84,13 +85,32 @@ def max_contour(thres):
     #Largest area contour
     #print(contours)
     if (len(contours) != 0):
-        cnts = contours[ci]
-        #print(cnts)
-        #time.sleep(10)
-        return cnts
+        max_contour = contours[ci]
+        return max_contour
     else:
         return None
 
+def check_finger(frame, max_contour):
+    #Find contours of the filtered frame
+    #Find convex hull
+    hull = cv2.convexHull(max_contour)
+
+    #Find convex defects
+    hull2 = cv2.convexHull(max_contour, returnPoints = False)
+    defects = cv2.convexityDefects(max_contour, hull2)
+
+    #Get defect points and draw them in the original image
+    FarDefect = []
+    for i in range(defects.shape[0]):
+        s,e,f,d = defects[i,0]
+        start = tuple(max_contour[s][0])
+        end = tuple(max_contour[e][0])
+        far = tuple(max_contour[f][0])
+        FarDefect.append(far)
+        cv2.line(frame,start,end,[0,255,0],1)
+        cv2.circle(frame,far,10,[100,255,255],3)
+    cv2.drawContours(frame,[hull],-1,(255,255,255),2)
+    return frame
 
 # Open Camera object
 data_dir = '../data/test.MOV'
@@ -104,97 +124,24 @@ while(cap.isOpened()):
         break
     skin = detect_skin(frame)
     thres, median = morphological_transform(skin)
-    cnts = max_contour(thres) 
-    if (cnts is None):
-        continue
-    #Find contours of the filtered frame
-    #Find convex hull
-    hull = cv2.convexHull(cnts)
+    max_contour = find_max_contour(thres) 
 
-    #Find convex defects
-    hull2 = cv2.convexHull(cnts,returnPoints = False)
-    defects = cv2.convexityDefects(cnts,hull2)
+    #frame = cv2.drawContours(frame, max_contour, -1, \
+    #        (255,0,0), 3)
+    #cv2.imshow('contour', frame)
+    if (max_contour is not None):
+        frame = check_finger(frame, max_contour)
+        x,y,w,h = cv2.boundingRect(max_contour)
+        frame = cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
 
-    #Get defect points and draw them in the original image
-    FarDefect = []
-    for i in range(defects.shape[0]):
-        s,e,f,d = defects[i,0]
-        start = tuple(cnts[s][0])
-        end = tuple(cnts[e][0])
-        far = tuple(cnts[f][0])
-        FarDefect.append(far)
-        cv2.line(frame,start,end,[0,255,0],1)
-        cv2.circle(frame,far,10,[100,255,255],3)
-
-	#Find moments of the largest contour
-    moments = cv2.moments(cnts)
-
-    #Central mass of first order moments
-    if moments['m00']!=0:
-        cx = int(moments['m10']/moments['m00']) # cx = M10/M00
-        cy = int(moments['m01']/moments['m00']) # cy = M01/M00
-    centerMass=(cx,cy)
-
-    #Draw center mass
-    cv2.circle(frame,centerMass,7,[100,0,255],2)
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(frame,'Center',tuple(centerMass),font,2,(255,255,255),2)
-
-    #Distance from each finger defect(finger webbing) to the center mass
-    distanceBetweenDefectsToCenter = []
-    for i in range(0,len(FarDefect)):
-        x =  np.array(FarDefect[i])
-        centerMass = np.array(centerMass)
-        distance = np.sqrt(np.power(x[0]-centerMass[0],2)+np.power(x[1]-centerMass[1],2))
-        distanceBetweenDefectsToCenter.append(distance)
-
-    #Get an average of three shortest distances from finger webbing to center mass
-    sortedDefectsDistances = sorted(distanceBetweenDefectsToCenter)
-    AverageDefectDistance = np.mean(sortedDefectsDistances[0:2])
-
-    #Get fingertip points from contour hull
-    #If points are in proximity of 80 pixels, consider as a single point in the group
-    finger = []
-    for i in range(0,len(hull)-1):
-        if (np.absolute(hull[i][0][0] - hull[i+1][0][0]) > 80) or ( np.absolute(hull[i][0][1] - hull[i+1][0][1]) > 80):
-            if hull[i][0][1] <500 :
-                finger.append(hull[i][0])
-
-    #The fingertip points are 5 hull points with largest y coordinates
-    finger =  sorted(finger,key=lambda x: x[1])
-    fingers = finger[0:5]
-
-    #Calculate distance of each finger tip to the center mass
-    fingerDistance = []
-    for i in range(0,len(fingers)):
-        distance = np.sqrt(np.power(fingers[i][0]-centerMass[0],2)+np.power(fingers[i][1]-centerMass[0],2))
-        fingerDistance.append(distance)
-
-    #Finger is pointed/raised if the distance of between fingertip to the center mass is larger
-    #than the distance of average finger webbing to center mass by 130 pixels
-    result = 0
-    for i in range(0,len(fingers)):
-        if fingerDistance[i] > AverageDefectDistance+130:
-            result = result +1
-
-    #Print number of pointed fingers
-    cv2.putText(frame,str(result),(100,100),font,2,(255,255,255),2)
-    x,y,w,h = cv2.boundingRect(cnts)
-    img = cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-
-    cv2.drawContours(frame,[hull],-1,(255,255,255),2)
 
     ##### Show final image ########
     cv2.imshow('Dilation',frame)
     ###############################
 
-    #Print execution time
-    #print time.time()-start_time
-
     #close the output video by pressing 'ESC'
     k = cv2.waitKey(5) & 0xFF
     if k == 27:
         break
-
-cap.release()
+ap.release()
 cv2.destroyAllWindows()
