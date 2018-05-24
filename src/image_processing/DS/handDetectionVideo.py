@@ -2,6 +2,12 @@ import cv2
 import numpy as np
 import time
 
+
+# TODO: 
+# 1. Code refactoring
+# 2. Error when no contours are found
+# 3. 
+
 def nothing(x):
     pass
 
@@ -29,10 +35,10 @@ def detect_skin(frame):
     mask = cv2.inRange(hsv, np.array([0,30,60]), \
             np.array([20,150,255]))
     skin = cv2.bitwise_and(frame, frame, mask=mask)
-
+    #cv2.imshow('skin', skin)
     return skin
 
-
+# TODO: Do more clear image transform
 def morphological_transform(frame):
     
     # Kernel matrices for morphological transformation
@@ -49,10 +55,41 @@ def morphological_transform(frame):
     kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(8,8))
     dilation2 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
     median = cv2.medianBlur(dilation2,5)
-    ret,thresh = cv2.threshold(median,127,255,0)
-    thresh = cv2.cvtColor(thresh, cv2.COLOR_BGR2GRAY) 
-    cv2.imshow('Thresh', thresh)
-    return thresh, median
+    ret,thres = cv2.threshold(median,127,255,0)
+    thres = cv2.cvtColor(thres, cv2.COLOR_BGR2GRAY) 
+    #cv2.imshow('thres', thres)
+    return thres, median
+
+
+def max_contour(thres):
+ 
+    _, contours, hierarchy = cv2.findContours(thres,\
+            cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    #Find Max contour area (Assume that hand is in the frame)
+    max_area=100
+    ci=0
+    contour = -1
+    for i in range(len(contours)):
+        contour = contours[i]
+        area = cv2.contourArea(contour)
+        if(area>max_area):
+            max_area=area
+            ci=i
+
+    #Draw Contours
+    # TODO: wrong contour drawed
+    # frame = cv2.drawContours(frame, contour, -1, (122,122,0), 3)
+    #cv2.imshow('contour',frame)
+
+    #Largest area contour
+    #print(contours)
+    if (len(contours) != 0):
+        cnts = contours[ci]
+        #print(cnts)
+        #time.sleep(10)
+        return cnts
+    else:
+        return None
 
 
 # Open Camera object
@@ -65,30 +102,12 @@ while(cap.isOpened()):
     ret, frame = cap.read()
     if (not ret):
         break
-    mask2 = detect_skin(frame)
-    thresh, median = morphological_transform(mask2)
-
-   #Find contours of the filtered frame
-    _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-       #Find Max contour area (Assume that hand is in the frame)
-    max_area=100
-    ci=0
-    for i in range(len(contours)):
-        cnt=contours[i]
-        area = cv2.contourArea(cnt)
-        if(area>max_area):
-            max_area=area
-            ci=i
-
-    #Draw Contours
-    cv2.drawContours(frame, cnt, -1, (122,122,0), 3)
-    cv2.imshow('Dilation',median)
-
-    #Largest area contour
-    #print(contours)
-    cnts = contours[ci]
-
+    skin = detect_skin(frame)
+    thres, median = morphological_transform(skin)
+    cnts = max_contour(thres) 
+    if (cnts is None):
+        continue
+    #Find contours of the filtered frame
     #Find convex hull
     hull = cv2.convexHull(cnts)
 
