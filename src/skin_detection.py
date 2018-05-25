@@ -90,6 +90,7 @@ def check_finger(frame, max_contour):
     return frame
 
 # Open Camera object
+'''
 data_dir = '../data/test.MOV'
 cap = cv2.VideoCapture(0)
 
@@ -119,3 +120,4 @@ while(cap.isOpened()):
         break
 cap.release()
 cv2.destroyAllWindows()
+'''
