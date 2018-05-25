@@ -1,11 +1,18 @@
 import cv2
+import skin_detection as sd
 
 class FingerCounter():
 
-    def __init__(self, is_background, \
+    def __init__(self, mode, \
             in_dir=None, out_dir=None):
+        
+        if mode == 'background':
+            self.is_background = True
+        elif mode == 'skin':
+            self.is_background = False
+        else:
+            raise UnavialableModeError()
 
-        self.is_background = is_background
         self.in_dir = in_dir
         self.out_dir = out_dir
         self.is_webcam = True
@@ -13,35 +20,35 @@ class FingerCounter():
             self.is_webcam = False
         
     def play_game():
-        
         cap = None
         bgs = BackgroundSubtractor(self.is_webcam)
 
-        if not is_webcam:
+        if not self.is_webcam:
             cap = cv2.VideoCapture(0)
         else:
-            cap = cv2.VideoCapture(in_dir)
-	    fourcc = cv2.VideoWriter_fourcc(*'XVID') 
+            cap = cv2.VideoCapture(self.in_dir)
+            fourcc = cv2.VideoWriter_fourcc(*'XVID') 
             out = cv2.VideoWriter(self.out_dir)
        
-        while (cap.open()):
-            
+        while cap.open():
+        
             ret, frame = cap.read()
             if self.is_background:
                 mask = bgs(frame)
             else:
-                # mask = ?
-                pass
+                mask = sd.detect_skin()
 
-            finger_cnt, frame = get_finger(mask)
+            #finger_cnt, frame = get_finger(mask)
 
             if self.is_webcam:
                 cv2.imshow()
                 k = cv2.waitKey(5) & 0xFF
                 if k == 27:
                     break
+        cap.release()
+        cv2.destroyAllWindows()
 
-       cap.release()
-       cv2.destroyAllWindows()
-
-
+class UnavailableModeError(Exception):
+    
+    def __str__(self):
+        return "only 'skin' or 'background' is available"
