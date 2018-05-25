@@ -2,15 +2,6 @@ import cv2
 import numpy as np
 import time
 
-
-# TODO: 
-# 1. Code refactoring
-# 2. Error when no contours are found
-# 3. 
-
-def nothing(x):
-    pass
-
 # Function to find angle between two vectors
 def Angle(v1,v2):
     dot = np.dot(v1,v2)
@@ -77,12 +68,7 @@ def find_max_contour(thres):
             max_area=area
             ci=i
 
-    #Draw Contours
-    # TODO: wrong contour drawed
-    # frame = cv2.drawContours(frame, contour, -1, (122,122,0), 3)
-    #cv2.imshow('contour',frame)
-
-    #Largest area contour
+   #Largest area contour
     #print(contours)
     if (len(contours) != 0):
         max_contour = contours[ci]
@@ -126,10 +112,7 @@ while(cap.isOpened()):
     thres, median = morphological_transform(skin)
     max_contour = find_max_contour(thres) 
 
-    #frame = cv2.drawContours(frame, max_contour, -1, \
-    #        (255,0,0), 3)
-    #cv2.imshow('contour', frame)
-    if (max_contour is not None):
+   if (max_contour is not None):
         frame = check_finger(frame, max_contour)
         x,y,w,h = cv2.boundingRect(max_contour)
         frame = cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
