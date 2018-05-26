@@ -3,4 +3,5 @@ idea/
 data/
 .venv
 venv/
+*.avi
 .output/*
