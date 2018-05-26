@@ -1,6 +1,7 @@
 *.iml
-.idea/*
-.data/*
+idea/
+data/
 .venv
 venv/
 *.avi
+.output/*
