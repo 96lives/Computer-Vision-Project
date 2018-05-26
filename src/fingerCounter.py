@@ -2,6 +2,9 @@ import cv2
 import math
 import skin_detection as sd
 import BackgroundSubtractor as bg
+import Shaker as sh
+import matplotlib.pyplot as plt
+import time
 
 class FingerCounter():
 
@@ -25,6 +28,11 @@ class FingerCounter():
     def play_game(self):
         cap = None
         bgs = None
+
+        shaker = sh.Shaker()
+        shake_sw = False
+        shake_ended = False
+
         if self.is_background:
             bgs = bg.BackgroundSubtractor(self.is_webcam)
 
@@ -38,6 +46,7 @@ class FingerCounter():
         while cap.isOpened():
             print("qwe")
             ret, frame = cap.read()
+
             if self.is_background:
                 mask = bgs.process_frame(frame)
                 if mask is None:
@@ -45,14 +54,33 @@ class FingerCounter():
             else:
                 mask = sd.detect_skin(frame)
             cv2.imshow('mask', mask)
-            frame, finger_cnt = count_finger(frame, mask)
-            print(finger_cnt)
+
+            if shake_sw is False:
+                shake_ended = shaker.shake_detect(mask)
+
+            if shake_ended is False:
+                pass
+            else:
+                if shake_sw is False:
+                    time.sleep(5)
+                shake_sw = True
+                frame, finger_cnt = count_finger(frame, mask)
+                print(finger_cnt)
 
             if self.is_webcam:
                 cv2.imshow('frame', frame)
                 k = cv2.waitKey(5) & 0xFF
                 if k == 27:
                     break
+        
+        plt.plot(shaker.xhistory)
+        plt.ylabel('avg x')
+        #plt.show()
+
+        plt.plot(shaker.smoothed)
+        plt.ylabel('smoothed')
+        plt.show()
+
         cap.release()
         cv2.destroyAllWindows()
 

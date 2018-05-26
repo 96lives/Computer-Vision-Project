@@ -57,17 +57,18 @@ class Shaker():
 	def local_minmax(self, arr):
 		num_min = 0
 		num_max = 0
+		margin = 4
 		arr = np.array(arr)#.reshape((-1,1)) # (a,1) numpy array
 		if arr.shape[0] > 20: 
 			#arr = gaussian_filter(arr, sigma=7)
 			arr = np.convolve(arr, [1/16,4/16,6/16,4/16,1/16], 'same')
 			arr[0] = arr[1]
 			arr[-1] = arr[-2]
-			for i in range(1,len(arr)-1):
-				if arr[i] < arr[i-1] and arr[i] < arr[i+1] :
+			for i in range(1,len(arr)-1): # minimum: slower
+				if arr[i] < arr[i-1] - margin and arr[i] < arr[i+1] - margin :
 					num_min += 1
 					self.minima.append(arr[i])
-				if arr[i] > arr[i-1] and arr[i] > arr[i+1] :
+				if arr[i] > arr[i-1] + margin and arr[i] > arr[i+1] + margin :
 					num_max += 1
 			self.smoothed = arr
 			return num_min, num_max
@@ -89,8 +90,7 @@ class Shaker():
 		if k == 27:
 			pass
 
-	def shake_detect(self, frame):
-		binary = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+	def shake_detect(self, binary):
 		p0, p1, st = self.optical_flow(binary)
 		if p0 is None:
 			self.prev_binary = binary
