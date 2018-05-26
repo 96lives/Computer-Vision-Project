@@ -1,6 +1,7 @@
 import cv2
 import math
 import skin_detection as sd
+import BackgroundSubtractor as bg
 
 class FingerCounter():
 
@@ -23,7 +24,9 @@ class FingerCounter():
         
     def play_game(self):
         cap = None
-        #bgs = BackgroundSubtractor(self.is_webcam)
+        bgs = None
+        if self.is_background:
+            bgs = bg.BackgroundSubtractor(self.is_webcam)
 
         if self.is_webcam:
             cap = cv2.VideoCapture(0)
@@ -36,7 +39,9 @@ class FingerCounter():
             print("qwe")
             ret, frame = cap.read()
             if self.is_background:
-                mask = bgs(frame)
+                mask = bgs.process_frame(frame)
+                if mask is None:
+                    continue
             else:
                 mask = sd.detect_skin(frame)
             cv2.imshow('mask', mask)
@@ -59,6 +64,8 @@ class UnavailableModeError(Exception):
 def count_finger(frame, mask):
     print("AAA")
     max_contour = find_max_contour(mask)
+    if max_contour is None: 
+        return frame, 0
     if max_contour is not None:
         hull = cv2.convexHull(max_contour, returnPoints=False)
         print("ZZZ")
@@ -66,7 +73,7 @@ def count_finger(frame, mask):
             defects = cv2.convexityDefects(max_contour, hull)
             if defects is not None:
                 cnt = 0
-                print(defects)
+                #print(defects)
                 for i in range(defects.shape[0]):
                     s, e, f, d = defects[i][0]
                     start = tuple(max_contour[s][0])

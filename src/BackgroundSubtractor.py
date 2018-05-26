@@ -9,8 +9,8 @@ class BackgroundSubtractor():
 	def __init__(self, is_webcam = False):
 		# parameters
 		self.is_webcam = is_webcam
-		self.cap_region_x_begin = 0.5  	# start point/total width
-		self.cap_region_y_end = 0.8  	# end point/total width
+		self.cap_region_x_begin = 0  	# start point/total width
+		self.cap_region_y_end = 1  	# end point/total width
 		self.threshold = 60  		# BINARY threshold
 		self.blurValue = 41  		# GaussianBlur parameter
 		self.bgSubThreshold = 50
@@ -25,7 +25,7 @@ class BackgroundSubtractor():
 		
 	def original(self, frame):
 		frame = cv2.bilateralFilter(frame, 5, 50, 100)  # smoothing filter
-		frame = cv2.flip(frame, 1)  			# flip the frame horizontally
+		#frame = cv2.flip(frame, 1)  			# flip the frame horizontally
 		cv2.rectangle(frame, (int(self.cap_region_x_begin * frame.shape[1]), 0),
 			 (frame.shape[1], int(self.cap_region_y_end * frame.shape[0])), (255, 0, 0), 2)	#draw rectangle
 		return frame
@@ -69,8 +69,8 @@ class BackgroundSubtractor():
 
 	def process_frame(self, frame):
 		frame = self.original(frame)
-		if not self.isBgCaptured 
-			if not self.is_webcam:
+		if not self.isBgCaptured:
+			if self.is_webcam:
 				cv2.imshow('original', frame)
 				k = cv2.waitKey(10)
 				if k == 27:  # press ESC to exit
