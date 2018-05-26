@@ -8,7 +8,6 @@ class FingerCounter():
     def __init__(self, mode, \
             in_dir=None, out_dir=None):
         
-        #TODO: error handling
         if mode == 'background':
             self.is_background = True
         elif mode == 'skin':
@@ -33,11 +32,11 @@ class FingerCounter():
         else:
             cap = cv2.VideoCapture(self.in_dir)
             fourcc = cv2.VideoWriter_fourcc(*'XVID') 
-            out = cv2.VideoWriter(self.out_dir)
+            out = cv2.VideoWriter(self.out_dir, fourcc, 30, (640, 480))
        
         while cap.isOpened():
-            print("qwe")
             ret, frame = cap.read()
+            cv2.imshow('original frame', frame)
             if self.is_background:
                 mask = bgs.process_frame(frame)
                 if mask is None:
@@ -53,6 +52,10 @@ class FingerCounter():
                 k = cv2.waitKey(5) & 0xFF
                 if k == 27:
                     break
+            else:
+                frame = cv2.flip(frame, 0)
+                frame = cv2.flip(frame, 1)
+                cv2.imshow('frame', frame)
         cap.release()
         cv2.destroyAllWindows()
 
@@ -62,13 +65,11 @@ class UnavailableModeError(Exception):
         return "only 'skin' or 'background' is available"
 
 def count_finger(frame, mask):
-    print("AAA")
     max_contour = find_max_contour(mask)
     if max_contour is None: 
         return frame, 0
     if max_contour is not None:
         hull = cv2.convexHull(max_contour, returnPoints=False)
-        print("ZZZ")
         if len(hull) > 3:
             defects = cv2.convexityDefects(max_contour, hull)
             if defects is not None:
