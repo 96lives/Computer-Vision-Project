@@ -10,9 +10,9 @@ def detect_skin(frame):
 def mask_skin(frame):
     
     # blur image
-    blur = cv2.blur(frame, (5, 5))
+    blur = cv2.blur(frame, (3, 3))
     lower = np.array([0, 48, 80], dtype="uint8")
-    upper = np.array([20, 255, 2555], dtype="uint8")
+    upper = np.array([20, 255, 255], dtype="uint8")
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower, upper)
     skin = cv2.bitwise_and(frame, frame, mask=mask)

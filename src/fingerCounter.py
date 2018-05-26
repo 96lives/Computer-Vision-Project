@@ -42,25 +42,25 @@ class FingerCounter():
             if not ret:
                 break
             
+            if not self.is_webcam:
+                frame = cv2.flip(frame, 0)
+                frame = cv2.flip(frame, 1)
+            
             mask = None
             if self.is_background:
                 mask = bgs.process_frame(frame)
             else:
                 mask = sd.detect_skin(frame)
-            if mask is not None:
-                cv2.imshow('mask', mask)
+            
             frame, finger_cnt = count_finger(frame, mask)
             print(finger_cnt)
 
-            if self.is_webcam:
-                cv2.imshow('frame', frame)
-                k = cv2.waitKey(5) & 0xFF
-                if k == 27:
-                    break
-            else:
-                frame = cv2.flip(frame, 0)
-                frame = cv2.flip(frame, 1)
-                cv2.imshow('frame', frame)
+            cv2.imshow('mask', mask)
+            cv2.imshow('frame', frame)
+            k = cv2.waitKey(5) & 0xFF
+            if k == 27:
+                break
+
                 out.write(frame)
         cap.release()
         out.write(frame)
