@@ -32,18 +32,25 @@ class FingerCounter():
         else:
             cap = cv2.VideoCapture(self.in_dir)
             fourcc = cv2.VideoWriter_fourcc(*'XVID') 
-            out = cv2.VideoWriter(self.out_dir, fourcc, 30, (640, 480))
+            out = cv2.VideoWriter(self.out_dir, fourcc,\
+                    round(cap.get(5)), \
+                    (int(cap.get(3)),int(cap.get(4))))
        
         while cap.isOpened():
             ret, frame = cap.read()
+
+            if not ret:
+                break
+            
             cv2.imshow('original frame', frame)
+            mask = None
             if self.is_background:
                 mask = bgs.process_frame(frame)
                 if mask is None:
                     continue
             else:
                 mask = sd.detect_skin(frame)
-            cv2.imshow('mask', mask)
+            #cv2.imshow('mask', mask)
             frame, finger_cnt = count_finger(frame, mask)
             print(finger_cnt)
 
@@ -56,7 +63,9 @@ class FingerCounter():
                 frame = cv2.flip(frame, 0)
                 frame = cv2.flip(frame, 1)
                 cv2.imshow('frame', frame)
+                out.write(frame)
         cap.release()
+        out.write(frame)
         cv2.destroyAllWindows()
 
 class UnavailableModeError(Exception):
@@ -65,6 +74,8 @@ class UnavailableModeError(Exception):
         return "only 'skin' or 'background' is available"
 
 def count_finger(frame, mask):
+    if mask is None:
+        return frame, 0
     max_contour = find_max_contour(mask)
     if max_contour is None: 
         return frame, 0

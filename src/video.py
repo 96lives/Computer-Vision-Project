@@ -3,11 +3,42 @@ import fnmatch
 import skin_detection as sd
 import BackgroundSubtractor as BGS
 import fingerCounter as FC
+import cv2
 
 file_name = "test.MOV"
-out_dir = "output.MOV"
-fc = FC.FingerCounter("skin", file_name, out_dir)
+out_dir = "output.avi"
+cap = cv2.VideoCapture(file_name)
+fc = FC.FingerCounter('skin', file_name, out_dir)
 fc.play_game()
+
+'''
+file_name = "test.MOV"
+out_dir = "output.avi"
+cap = cv2.VideoCapture(file_name)
+fourcc = cv2.VideoWriter_fourcc(*'XVID') 
+print(cap.get(5))
+out = cv2.VideoWriter(out_dir, fourcc, round(cap.get(5)),
+        (int(cap.get(3)), int(cap.get(4))))
+while cap.isOpened():
+    ret, frame = cap.read()
+    #cv2.imshow('orignal frame', frame)
+    if ret:
+        frame = cv2.flip(frame, 0)
+        frame = cv2.flip(frame, 1)
+        #print(frame.shape)
+        mask = sd.detect_skin(frame)
+        frame, finger_cnt = FC.count_finger(frame, mask)
+
+        out.write(frame)
+        k = cv2.waitKey(5) & 0xFF
+        if k == 27:
+            break
+    else:
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+'''
 
 '''
 def files(path):
