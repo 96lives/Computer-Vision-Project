@@ -42,15 +42,13 @@ class FingerCounter():
             if not ret:
                 break
             
-            cv2.imshow('original frame', frame)
             mask = None
             if self.is_background:
                 mask = bgs.process_frame(frame)
-                if mask is None:
-                    continue
             else:
                 mask = sd.detect_skin(frame)
-            #cv2.imshow('mask', mask)
+            if mask is not None:
+                cv2.imshow('mask', mask)
             frame, finger_cnt = count_finger(frame, mask)
             print(finger_cnt)
 
@@ -79,29 +77,30 @@ def count_finger(frame, mask):
     max_contour = find_max_contour(mask)
     if max_contour is None: 
         return frame, 0
-    if max_contour is not None:
-        hull = cv2.convexHull(max_contour, returnPoints=False)
-        if len(hull) > 3:
-            defects = cv2.convexityDefects(max_contour, hull)
-            if defects is not None:
-                cnt = 0
-                #print(defects)
-                for i in range(defects.shape[0]):
-                    s, e, f, d = defects[i][0]
-                    start = tuple(max_contour[s][0])
-                    end = tuple(max_contour[e][0])
-                    far = tuple(max_contour[f][0])
-                    a = compute_distance(end, start)
-                    b = compute_distance(far, start)
-                    c = compute_distance(end, far)
-                    angle = compute_angle(a, b, c)
-                    # treat fingers with angle <= 90
-                    if angle <= (math.pi / 2):  
-                        cnt += 1
-                        frame = cv2.circle(frame, \
-                                far, 8, [211, 84, 0], -1)
-                return frame, cnt
-        return frame, 0
+
+    x,y,w,h = cv2.boundingRect(max_contour)
+    frame = cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+    hull = cv2.convexHull(max_contour, returnPoints=False)
+    if len(hull) > 3:
+        defects = cv2.convexityDefects(max_contour, hull)
+        if defects is not None:
+            cnt = 0
+            for i in range(defects.shape[0]):
+                s, e, f, d = defects[i][0]
+                start = tuple(max_contour[s][0])
+                end = tuple(max_contour[e][0])
+                far = tuple(max_contour[f][0])
+                a = compute_distance(end, start)
+                b = compute_distance(far, start)
+                c = compute_distance(end, far)
+                angle = compute_angle(a, b, c)
+                # treat fingers with angle <= 90
+                if angle <= (math.pi / 2):  
+                    cnt += 1
+                    frame = cv2.circle(frame, \
+                            far, 8, [211, 84, 0], -1)
+            return frame, cnt
+    return frame, 0
 
 def find_max_contour(mask):
  
