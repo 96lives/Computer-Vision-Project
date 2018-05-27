@@ -1,10 +1,10 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-cap = cv2.VideoCapture('output_bin_1.avi')
+cap = cv2.VideoCapture('../smallR/IMG_0090.MOV')
 
 # params for ShiTomasi corner detection
-feature_params = dict( maxCorners = 100,
+feature_params = dict( maxCorners = 300,
                        qualityLevel = 0.3,
                        minDistance = 7,
                        blockSize = 7 )
@@ -48,20 +48,25 @@ while(1):
         p0 = cv2.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
         continue
         
-    # Select good points
-    good_new = p1[st==1]
-    good_old = p0[st==1]
-  
-    x_cor = []   
 
-    # draw the tracks
-    for i,(new,old) in enumerate(zip(good_new,good_old)):
-        a,b = new.ravel()
-        c,d = old.ravel()
-        mask = cv2.line(mask, (a,b),(c,d), color[i].tolist(), 2)
-        frame = cv2.circle(frame,(a,b),5,color[i].tolist(),-1)
-        x_cor.append(a)
-    history.append(np.average(x_cor))
+
+
+    if p1 is not None and (p1[st==1].size != 0):
+        # Select good points
+        good_new = p1[st==1]
+        good_old = p0[st==1]
+	  
+        x_cor = []   
+
+        # draw the tracks
+        for i,(new,old) in enumerate(zip(good_new,good_old)):
+            a,b = new.ravel()
+            c,d = old.ravel()
+            mask = cv2.line(mask, (a,b),(c,d), color[i].tolist(), 2)
+            frame = cv2.circle(frame,(a,b),5,color[i].tolist(),-1) 
+            x_cor.append(a)
+        history.append(np.average(x_cor))
+
     img = cv2.add(frame,mask)
 
     cv2.imshow('frame',img)

@@ -41,12 +41,14 @@ class FingerCounter():
         else:
             cap = cv2.VideoCapture(self.in_dir)
             fourcc = cv2.VideoWriter_fourcc(*'XVID') 
-            out = cv2.VideoWriter(self.out_dir)
+            #out = cv2.VideoWriter(self.out_dir)
        
         while cap.isOpened():
             print("qwe")
             ret, frame = cap.read()
-
+            if ret is False:
+                break
+            frame = cv2.resize(frame,(640,480))
             if self.is_background:
                 mask = bgs.process_frame(frame)
                 if mask is None:
@@ -61,15 +63,15 @@ class FingerCounter():
             if shake_ended is True:
                 if shake_sw is False:
                     print('shake ended')
-                shake_sw = True
+                    time.sleep(2)
+                    shake_sw = True
                 frame, finger_cnt = count_finger(frame, mask)
                 print(finger_cnt)
 
-            if self.is_webcam:
-                cv2.imshow('frame', frame)
-                k = cv2.waitKey(5) & 0xFF
-                if k == 27:
-                    break
+            cv2.imshow('frame', frame)
+            k = cv2.waitKey(5) & 0xFF
+            if k == 27:
+                break
         
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')

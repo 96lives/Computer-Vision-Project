@@ -50,14 +50,16 @@ class Shaker():
 			c, d = old.ravel()
 			x_cor.append(a)
 			y_cor.append(b)
-		self.xhistory.append(np.average(x_cor))
-		self.yhistory.append(np.average(y_cor))
+		if x_cor is not []:
+			self.xhistory.append(np.average(x_cor))
+		if y_cor is not []:
+			self.yhistory.append(np.average(y_cor))
 		#print('update (' + str(np.average(x_cor)) + ', ' + str(np.average(y_cor))+')')
 
 	def local_minmax(self, arr):
 		num_min = 0
 		num_max = 0
-		margin = 3
+		margin = 4
 		arr = np.array(arr)#.reshape((-1,1)) # (a,1) numpy array
 		if arr.shape[0] > 20: 
 			#arr = gaussian_filter(arr, sigma=7)
@@ -90,12 +92,14 @@ class Shaker():
 		if k == 27:
 			pass
 
+
 	def shake_detect(self, binary):
 		p0, p1, st = self.optical_flow(binary)
 		if p0 is None:
 			self.prev_binary = binary
 			return False
 		self.update(p0, p1, st)
+	#	self.update2(binary)
 		num_min, num_max = self.local_minmax(self.yhistory)
 		print('local : ' + str(num_min) + ', ' + str(num_max))
 		if num_min >= 1 and num_max >= 2 and self.yhistory[-1] < self.minima[0] + 30:
