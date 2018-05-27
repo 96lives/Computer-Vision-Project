@@ -28,7 +28,10 @@ class Shaker():
 		self.prev_binary = None
 		self.smoothed = np.array([])
 		self.minima = []
-		self.flow_pix = []
+		self.min_bianry = None
+		self.max_bianry = None
+		self.min_image = None
+		self.max_image = None
 
 	def optical_flow(self, binary):
 		self.flow_pix = []
@@ -61,7 +64,7 @@ class Shaker():
 		#	self.yhistory.append(np.average(y_cor)) 
 		#print('update (' + str(np.average(x_cor)) + ', ' + str(np.average(y_cor))+')')
 
-	def local_minmax(self, arr):
+	def local_minmax(self, arr, binary, frame):
 		num_min = 0
 		num_max = 0
 		margin = 2
@@ -77,10 +80,16 @@ class Shaker():
 				if (arr[i] < arr[i-1] - margin and arr[i] < arr[i+1]) \
 					or (arr[i] < arr[i-1] and arr[i] < arr[i+1] - margin) :
 					num_min += 1
+					if num_min is 1: 
+						self.min_image = frame
+						self.min_binary = binary
 					self.minima.append(arr[i])
 				if (arr[i] > arr[i-1] + margin and arr[i] > arr[i+1]) \
 					or (arr[i] > arr[i-1] and arr[i] > arr[i+1] + margin) :
 					num_max += 1
+					if num_max is 1: 
+						self.max_image = frame
+						self.min_binary = binary
 			self.smoothed = arr
 			return num_min, num_max
 		return 0, 0
@@ -118,12 +127,29 @@ class Shaker():
 	def get_flow_pixel(self):
 		return self.flow_pix
 
-	def shake_detect(self, binary):
-		p0, p1, st = self.optical_flow(binary)
-		if p0 is not None:
-			self.update_flow(p0, p1, st)
+	def update_image(self):
+		if self.min_image is None:
+			return 0
+		if self.max_image is None:
+			return 0
+		return self.average_skin()		
+
+	def average_skin(self):
+		epsilon = 10
+		mask = cv2.inRange(abs(self.min_image - self.max_image), epsilon, 255)
+		minmask = cv2.bitwise_and(mask, self.min_binary)
+		maxmask = cv2.bitwise_and(mask, self.max_binary)
+		maximg = cv2.bitwise_and(maxmask, self.max_image)
+		idx = np.argwhere(maximg > 0)
+		avg = np.average(maximg[idx])
+		return avg
+
+	def shake_detect(self, binary, frame):
+		#p0, p1, st = self.optical_flow(binary)
+		#if p0 is not None:
+		#	self.update_flow(p0, p1, st)
 		self.update2(binary)
-		num_min, num_max = self.local_minmax(self.yhistory)
+		num_min, num_max = self.local_minmax(self.yhistory, binary, frame)
 		print('local : ' + str(num_min) + ', ' + str(num_max))
 		if num_min >= 1 and num_max >= 2 and self.yhistory[-1] < max(self.minima) + 30:
 			return True
