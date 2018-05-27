@@ -6,6 +6,7 @@ import Shaker as sh
 import matplotlib.pyplot as plt
 import time
 
+
 class FingerCounter():
 
     def __init__(self, mode, \
@@ -67,6 +68,7 @@ class FingerCounter():
                 print(finger_cnt)
 
             cv2.imshow('frame', frame)
+            #time.sleep(0.5)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
