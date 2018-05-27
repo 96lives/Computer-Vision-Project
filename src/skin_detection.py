@@ -43,8 +43,8 @@ def morphological_transform(frame):
 
     # check is the thres is GBR format
     if len(median.shape) == 3:
-        thres = cv2.cvtColor(median, cv2.COLOR_BGR2GRAY) 
-    return thres
+        median = cv2.cvtColor(median, cv2.COLOR_BGR2GRAY) 
+    return median
 
 
 def find_max_contour(thres):

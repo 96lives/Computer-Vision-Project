@@ -53,7 +53,7 @@ class FingerCounter():
             if self.is_background:
                 mask = bgs.process_frame(frame)
             else:
-                mask = sd.detect_skin(frame)
+                mask = sd.mask_skin(frame)
             cv2.imshow('mask', mask)
 
             if shake_sw is False:
