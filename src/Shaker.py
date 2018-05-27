@@ -73,7 +73,7 @@ class Shaker():
 			arr[1] = arr[2]
 			arr[-1] = arr[-3]
 			arr[-2] = arr[-3]
-			for i in range(10,len(arr)-1): # minimum: slower
+			for i in range(20,len(arr)-1): # minimum: slower
 				if (arr[i] < arr[i-1] - margin and arr[i] < arr[i+1]) \
 					or (arr[i] < arr[i-1] and arr[i] < arr[i+1] - margin) :
 					num_min += 1
