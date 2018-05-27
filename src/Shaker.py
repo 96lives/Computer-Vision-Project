@@ -74,10 +74,12 @@ class Shaker():
 			arr[-1] = arr[-3]
 			arr[-2] = arr[-3]
 			for i in range(1,len(arr)-1): # minimum: slower
-				if arr[i] < arr[i-1] - margin and arr[i] < arr[i+1] - margin :
+				if (arr[i] < arr[i-1] - margin and arr[i] < arr[i+1]) \
+					or (arr[i] < arr[i-1] and arr[i] < arr[i+1] - margin) :
 					num_min += 1
 					self.minima.append(arr[i])
-				if arr[i] > arr[i-1] + margin and arr[i] > arr[i+1] + margin :
+				if (arr[i] > arr[i-1] + margin and arr[i] > arr[i+1]) \
+					or (arr[i] > arr[i-1] and arr[i] > arr[i+1] + margin) :
 					num_max += 1
 			self.smoothed = arr
 			return num_min, num_max
