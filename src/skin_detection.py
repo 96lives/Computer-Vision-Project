@@ -10,9 +10,10 @@ def detect_skin(frame):
 def mask_skin(frame):
     
     # blur image
-    blur = cv2.blur(frame, (3, 3))
+    blur = cv2.blur(frame, (7, 7))
     lower = np.array([0, 48, 80], dtype="uint8")
     upper = np.array([20, 255, 255], dtype="uint8")
+    
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower, upper)
     skin = cv2.bitwise_and(frame, frame, mask=mask)
@@ -23,24 +24,26 @@ def mask_skin(frame):
 def morphological_transform(frame):
     
     # Kernel matrices for morphological transformation
-    kernel_square = np.ones((11,11),np.uint8)
-    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+    kernel_square = np.ones((21,21),np.uint8)
+    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(1, 1))
 
     #Perform morphological transformations to filter out the background noise
     #Dilation increase skin color area
     #Erosion increase skin color area
-    dilation = cv2.dilate(frame, kernel_ellipse,iterations = 1)
-    erosion = cv2.erode(dilation,kernel_square,iterations = 1)
-    dilation2 = cv2.dilate(erosion,kernel_ellipse,iterations = 1)
-    filtered = cv2.medianBlur(dilation2,5)
-    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(8,8))
-    dilation2 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
-    median = cv2.medianBlur(dilation2,5)
-    ret,thres = cv2.threshold(median,127,255,0)
+    #dilation = cv2.dilate(frame, kernel_ellipse,iterations = 1)
+    erosion = cv2.erode(frame,kernel_square,iterations = 1)
+    #dilation2 = cv2.dilate(erosion,kernel_ellipse,iterations = 1)
+    cv2.imshow('erosion', erosion)
+    #filtered = cv2.medianBlur(dilation2,11)
+    #kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(8,8))
+    #dilation2 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
+    median = cv2.medianBlur(erosion,5)
+    cv2.imshow('median', median)
+    #ret,thres = cv2.threshold(median,127,255,0)
 
     # check is the thres is GBR format
-    if len(thres.shape) == 3:
-        thres = cv2.cvtColor(thres, cv2.COLOR_BGR2GRAY) 
+    if len(median.shape) == 3:
+        thres = cv2.cvtColor(median, cv2.COLOR_BGR2GRAY) 
     return thres
 
 

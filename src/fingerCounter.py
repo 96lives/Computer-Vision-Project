@@ -2,6 +2,8 @@ import cv2
 import math
 import skin_detection as sd
 import BackgroundSubtractor as bg
+import time
+
 
 class FingerCounter():
 
@@ -50,13 +52,16 @@ class FingerCounter():
             if self.is_background:
                 mask = bgs.process_frame(frame)
             else:
-                mask = sd.detect_skin(frame)
+                skin = sd.mask_skin(frame)
+                transform = sd.detect_skin(frame)
             
             frame, finger_cnt = count_finger(frame, mask)
             print(finger_cnt)
 
-            cv2.imshow('mask', mask)
+            cv2.imshow('skin', skin)
+            cv2.imshow('transform', transform)
             cv2.imshow('frame', frame)
+            #time.sleep(0.5)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
