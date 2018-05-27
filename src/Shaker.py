@@ -57,7 +57,7 @@ class Shaker():
 	def local_minmax(self, arr):
 		num_min = 0
 		num_max = 0
-		margin = 4
+		margin = 3
 		arr = np.array(arr)#.reshape((-1,1)) # (a,1) numpy array
 		if arr.shape[0] > 20: 
 			#arr = gaussian_filter(arr, sigma=7)
@@ -96,9 +96,9 @@ class Shaker():
 			self.prev_binary = binary
 			return False
 		self.update(p0, p1, st)
-		num_min, num_max = self.local_minmax(self.xhistory)
+		num_min, num_max = self.local_minmax(self.yhistory)
 		print('local : ' + str(num_min) + ', ' + str(num_max))
-		if num_min >= 1 and num_max >= 2 and self.xhistory[-1] < self.minima[0] + 30:
+		if num_min >= 1 and num_max >= 2 and self.yhistory[-1] < self.minima[0] + 30:
 			return True
 		self.prev_binary = binary
 		return False

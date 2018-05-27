@@ -58,11 +58,9 @@ class FingerCounter():
             if shake_sw is False:
                 shake_ended = shaker.shake_detect(mask)
 
-            if shake_ended is False:
-                pass
-            else:
+            if shake_ended is True:
                 if shake_sw is False:
-                    time.sleep(5)
+                    print('shake ended')
                 shake_sw = True
                 frame, finger_cnt = count_finger(frame, mask)
                 print(finger_cnt)
@@ -73,8 +71,8 @@ class FingerCounter():
                 if k == 27:
                     break
         
-        plt.plot(shaker.xhistory)
-        plt.ylabel('avg x')
+        plt.plot(shaker.yhistory)
+        plt.ylabel('avg y')
         #plt.show()
 
         plt.plot(shaker.smoothed)
