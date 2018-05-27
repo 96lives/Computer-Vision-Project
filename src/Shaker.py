@@ -73,7 +73,7 @@ class Shaker():
 			arr[1] = arr[2]
 			arr[-1] = arr[-3]
 			arr[-2] = arr[-3]
-			for i in range(1,len(arr)-1): # minimum: slower
+			for i in range(10,len(arr)-1): # minimum: slower
 				if (arr[i] < arr[i-1] - margin and arr[i] < arr[i+1]) \
 					or (arr[i] < arr[i-1] and arr[i] < arr[i+1] - margin) :
 					num_min += 1
@@ -125,7 +125,7 @@ class Shaker():
 		self.update2(binary)
 		num_min, num_max = self.local_minmax(self.yhistory)
 		print('local : ' + str(num_min) + ', ' + str(num_max))
-		if num_min >= 1 and num_max >= 2 and self.yhistory[-1] < self.minima[0] + 30:
+		if num_min >= 1 and num_max >= 2 and self.yhistory[-1] < max(self.minima) + 30:
 			return True
 		self.prev_binary = binary
 		return False
