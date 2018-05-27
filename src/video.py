@@ -18,7 +18,7 @@ def files(path):
 if __name__ == "__main__":
     data_dir = "../data/"
     output_dir = "../data/output/"
-    folders = ['smallR/']
+    folders = ['smallP/']
     pattern = "*.MOV"
 
     for folder in folders:

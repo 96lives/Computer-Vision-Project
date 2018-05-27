@@ -53,13 +53,13 @@ class FingerCounter():
                 mask = bgs.process_frame(frame)
             else:
                 skin = sd.mask_skin(frame)
-                transform = sd.detect_skin(frame)
+                #transform = sd.detect_skin(frame)
             
             frame, finger_cnt = count_finger(frame, mask)
             print(finger_cnt)
 
             cv2.imshow('skin', skin)
-            cv2.imshow('transform', transform)
+            #cv2.imshow('transform', transform)
             cv2.imshow('frame', frame)
             #time.sleep(0.5)
             k = cv2.waitKey(5) & 0xFF
