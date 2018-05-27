@@ -42,35 +42,37 @@ class Shaker():
 			return None, None, None
 		return p0, p1, st
 
-	def update(self, p0, p1, st):
+	def update_flow(self, p0, p1, st):
 		good_new = p1[st==1]
 		good_old = p0[st==1]
-		x_cor = []
-		y_cor = []
+		#x_cor = []
+		#y_cor = []
 		flow_thres = 15
 		for i,(new,old) in enumerate(zip(good_new,good_old)):
 			a, b = new.ravel()
 			c, d = old.ravel()
-			x_cor.append(a)
-			y_cor.append(b)
-			if sqrt((a-c)^2+(b-d)^2) > flow_thres:
+			#x_cor.append(a)
+			#y_cor.append(b)
+			if math.sqrt((a-c)**2+(b-d)**2) > flow_thres:
 				self.flow_pix.append([a, b])
-		if x_cor is not []:
-			self.xhistory.append(np.average(x_cor))
-		if y_cor is not []:
-			self.yhistory.append(np.average(y_cor)) 
+		#if x_cor is not []:
+		#	self.xhistory.append(np.average(x_cor))
+		#if y_cor is not []:
+		#	self.yhistory.append(np.average(y_cor)) 
 		#print('update (' + str(np.average(x_cor)) + ', ' + str(np.average(y_cor))+')')
 
 	def local_minmax(self, arr):
 		num_min = 0
 		num_max = 0
-		margin = 4
+		margin = 2
 		arr = np.array(arr)#.reshape((-1,1)) # (a,1) numpy array
 		if arr.shape[0] > 20: 
 			#arr = gaussian_filter(arr, sigma=7)
 			arr = np.convolve(arr, [1/16,4/16,6/16,4/16,1/16], 'same')
-			arr[0] = arr[1]
-			arr[-1] = arr[-2]
+			arr[0] = arr[2]
+			arr[1] = arr[2]
+			arr[-1] = arr[-3]
+			arr[-2] = arr[-3]
 			for i in range(1,len(arr)-1): # minimum: slower
 				if arr[i] < arr[i-1] - margin and arr[i] < arr[i+1] - margin :
 					num_min += 1
@@ -102,20 +104,22 @@ class Shaker():
 		w = binary.shape[1]
 		weighted_y_sum = 0
 		weighted_x_sum = 0
-		cnt = 1
-		
-		self.yhistory.append(weighted_y_sum/cnt)
-		self.xhistory.append(weighted_x_sum/cnt)
+		idx = np.argwhere(binary > 0)
+		cnt = len(idx)
+		for i in idx:
+			weighted_y_sum += i[0]
+			weighted_x_sum += i[1]
+		if cnt is not 0:
+			self.yhistory.append(weighted_y_sum/cnt)
+			self.xhistory.append(weighted_x_sum/cnt)
 
 	def get_flow_pixel(self):
 		return self.flow_pix
 
 	def shake_detect(self, binary):
-	#	p0, p1, st = self.optical_flow(binary)
-	#	if p0 is None:
-	#		self.prev_binary = binary
-	#		return False
-	#	self.update(p0, p1, st)
+		p0, p1, st = self.optical_flow(binary)
+		if p0 is not None:
+			self.update_flow(p0, p1, st)
 		self.update2(binary)
 		num_min, num_max = self.local_minmax(self.yhistory)
 		print('local : ' + str(num_min) + ', ' + str(num_max))

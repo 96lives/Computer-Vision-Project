@@ -52,6 +52,8 @@ class FingerCounter():
             frame = cv2.resize(frame,(640,480))
             if self.is_background:
                 mask = bgs.process_frame(frame)
+                if mask is None:
+                    continue
             else:
                 mask = sd.mask_skin(frame)
             cv2.imshow('mask', mask)
