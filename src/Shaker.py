@@ -16,7 +16,7 @@ class Shaker():
 
 		# params for ShiTomasi corner detection
 		self.feature_params = dict(maxCorners = 100,
-				qualityLevel = 0.3,
+				qualityLevel = 0.1,
 				minDistance = 7,
 				blockSize = 7 )
 
@@ -28,8 +28,10 @@ class Shaker():
 		self.prev_binary = None
 		self.smoothed = np.array([])
 		self.minima = []
+		self.flow_pix = []
 
 	def optical_flow(self, binary):
+		self.flow_pix = []
 		if self.prev_binary is None or binary is None:
 			return None, None, None
 		try:
@@ -45,15 +47,18 @@ class Shaker():
 		good_old = p0[st==1]
 		x_cor = []
 		y_cor = []
+		flow_thres = 15
 		for i,(new,old) in enumerate(zip(good_new,good_old)):
 			a, b = new.ravel()
 			c, d = old.ravel()
 			x_cor.append(a)
 			y_cor.append(b)
+			if sqrt((a-c)^2+(b-d)^2) > flow_thres:
+				self.flow_pix.append([a, b])
 		if x_cor is not []:
 			self.xhistory.append(np.average(x_cor))
 		if y_cor is not []:
-			self.yhistory.append(np.average(y_cor))
+			self.yhistory.append(np.average(y_cor)) 
 		#print('update (' + str(np.average(x_cor)) + ', ' + str(np.average(y_cor))+')')
 
 	def local_minmax(self, arr):
@@ -92,14 +97,26 @@ class Shaker():
 		if k == 27:
 			pass
 
+	def update2(self, binary):
+		h = binary.shape[0]
+		w = binary.shape[1]
+		weighted_y_sum = 0
+		weighted_x_sum = 0
+		cnt = 1
+		
+		self.yhistory.append(weighted_y_sum/cnt)
+		self.xhistory.append(weighted_x_sum/cnt)
+
+	def get_flow_pixel(self):
+		return self.flow_pix
 
 	def shake_detect(self, binary):
-		p0, p1, st = self.optical_flow(binary)
-		if p0 is None:
-			self.prev_binary = binary
-			return False
-		self.update(p0, p1, st)
-	#	self.update2(binary)
+	#	p0, p1, st = self.optical_flow(binary)
+	#	if p0 is None:
+	#		self.prev_binary = binary
+	#		return False
+	#	self.update(p0, p1, st)
+		self.update2(binary)
 		num_min, num_max = self.local_minmax(self.yhistory)
 		print('local : ' + str(num_min) + ', ' + str(num_max))
 		if num_min >= 1 and num_max >= 2 and self.yhistory[-1] < self.minima[0] + 30:
