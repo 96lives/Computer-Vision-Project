@@ -2,6 +2,10 @@ import cv2
 import math
 import skin_detection as sd
 import BackgroundSubtractor as bg
+import Shaker as sh
+import matplotlib.pyplot as plt
+import time
+
 
 class FingerCounter():
 
@@ -24,6 +28,11 @@ class FingerCounter():
     def play_game(self):
         cap = None
         bgs = None
+
+        shaker = sh.Shaker()
+        shake_sw = False
+        shake_ended = False
+
         if self.is_background:
             bgs = bg.BackgroundSubtractor(self.is_webcam)
 
@@ -38,30 +47,40 @@ class FingerCounter():
        
         while cap.isOpened():
             ret, frame = cap.read()
-
-            if not ret:
+            if ret is False:
                 break
-            
-            if not self.is_webcam:
-                frame = cv2.flip(frame, 0)
-                frame = cv2.flip(frame, 1)
-            
-            mask = None
+            frame = cv2.resize(frame,(640,480))
             if self.is_background:
                 mask = bgs.process_frame(frame)
             else:
                 mask = sd.detect_skin(frame)
-            
-            frame, finger_cnt = count_finger(frame, mask)
-            print(finger_cnt)
-
             cv2.imshow('mask', mask)
+
+            if shake_sw is False:
+                shake_ended = shaker.shake_detect(mask)
+
+            if shake_ended is True:
+                if shake_sw is False:
+                    print('shake ended')
+                    time.sleep(2)
+                    shake_sw = True
+                frame, finger_cnt = count_finger(frame, mask)
+                print(finger_cnt)
+
             cv2.imshow('frame', frame)
+            #time.sleep(0.5)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
+        
+        plt.plot(shaker.yhistory)
+        plt.ylabel('avg y')
+        #plt.show()
 
-                out.write(frame)
+        plt.plot(shaker.smoothed)
+        plt.ylabel('smoothed')
+        plt.show()
+
         cap.release()
         out.write(frame)
         cv2.destroyAllWindows()

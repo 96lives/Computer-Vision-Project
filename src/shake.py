@@ -32,12 +32,11 @@ class Shaker():
 	def optical_flow(self, binary):
 		if self.prev_binary is None or binary is None:
 			return None, None, None
-		p0 = cv2.goodFeaturesToTrack(self.prev_binary, mask = None, **self.feature_params)
 		try:
+			p0 = cv2.goodFeaturesToTrack(self.prev_binary, mask = None, **self.feature_params)
 			p1, st, err = cv2.calcOpticalFlowPyrLK(self.prev_binary, binary, p0, None, **self.lk_params)
 		except Exception as e:
 			self.prev_binary = binary.copy()
-			print('yes')
 			return None, None, None
 		return p0, p1, st
 
@@ -59,7 +58,7 @@ class Shaker():
 		num_min = 0
 		num_max = 0
 		arr = np.array(arr)#.reshape((-1,1)) # (a,1) numpy array
-		if arr.shape[0] > 10: 
+		if arr.shape[0] > 20: 
 			#arr = gaussian_filter(arr, sigma=7)
 			arr = np.convolve(arr, [1/16,4/16,6/16,4/16,1/16], 'same')
 			arr[0] = arr[1]
@@ -86,12 +85,12 @@ class Shaker():
 			mask = cv2.line(mask, (a,b),(c,d), color[i].tolist(), 2)
 			frame = cv2.circle(binary,(a,b),5,color[i].tolist(),-1)
 		img = cv2.add(frame,mask)
-		cv2.imshow('frame',img)
 		k = cv2.waitKey(10)
 		if k == 27:
 			pass
 
-	def shake_detect(self, binary):
+	def shake_detect(self, frame):
+		binary = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		p0, p1, st = self.optical_flow(binary)
 		if p0 is None:
 			self.prev_binary = binary
