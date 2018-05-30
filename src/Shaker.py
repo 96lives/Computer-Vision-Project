@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import copy
-import math	
+import math
 import os
 import sys
 import matplotlib.pyplot as plt
@@ -61,7 +61,7 @@ class Shaker():
 		#if x_cor is not []:
 		#	self.xhistory.append(np.average(x_cor))
 		#if y_cor is not []:
-		#	self.yhistory.append(np.average(y_cor)) 
+		#	self.yhistory.append(np.average(y_cor))
 		#print('update (' + str(np.average(x_cor)) + ', ' + str(np.average(y_cor))+')')
 
 	def local_minmax(self, arr, binary, frame):
@@ -69,7 +69,7 @@ class Shaker():
 		num_max = 0
 		margin = 2
 		arr = np.array(arr)#.reshape((-1,1)) # (a,1) numpy array
-		if arr.shape[0] > 20: 
+		if arr.shape[0] > 20:
 			#arr = gaussian_filter(arr, sigma=7)
 			arr = np.convolve(arr, [1/16,4/16,6/16,4/16,1/16], 'same')
 			arr[0] = arr[2]
@@ -80,14 +80,14 @@ class Shaker():
 				if (arr[i] < arr[i-1] - margin and arr[i] < arr[i+1]) \
 					or (arr[i] < arr[i-1] and arr[i] < arr[i+1] - margin) :
 					num_min += 1
-					if num_min is 1: 
+					if num_min is 1:
 						self.min_image = frame
 						self.min_binary = binary
 					self.minima.append(arr[i])
 				if (arr[i] > arr[i-1] + margin and arr[i] > arr[i+1]) \
 					or (arr[i] > arr[i-1] and arr[i] > arr[i+1] + margin) :
 					num_max += 1
-					if num_max is 1: 
+					if num_max is 1:
 						self.max_image = frame
 						self.min_binary = binary
 			self.smoothed = arr
@@ -132,7 +132,7 @@ class Shaker():
 			return 0
 		if self.max_image is None:
 			return 0
-		return self.average_skin()		
+		return self.average_skin()
 
 	def average_skin(self):
 		epsilon = 10
@@ -143,6 +143,11 @@ class Shaker():
 		idx = np.argwhere(maximg > 0)
 		avg = np.average(maximg[idx])
 		return avg
+
+	def getClassifier(self):
+		avg = self.average_skin()
+		data = 1
+
 
 	def shake_detect(self, binary, frame):
 		#p0, p1, st = self.optical_flow(binary)
@@ -155,7 +160,7 @@ class Shaker():
 			return True
 		self.prev_binary = binary
 		return False
-		
+
 if __name__ == "__main__":
 	sh = Shaker()
 	cap = cv2.VideoCapture('output_bin_1.avi')
@@ -163,17 +168,17 @@ if __name__ == "__main__":
 		ret, frame = cap.read()
 		frame = cv2.resize(frame,(640, 480))
 		frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-		if ret is False: 
+		if ret is False:
 			break
 		cv2.imshow('original', frame)
 
 		ret = sh.shake_detect(frame)
-		if ret is True: 
+		if ret is True:
 			break
 		k = cv2.waitKey(10)
 		if k == 27:
 			break
-		
+
 
 	plt.plot(sh.xhistory)
 	plt.ylabel('avg x')
@@ -182,11 +187,3 @@ if __name__ == "__main__":
 	plt.plot(sh.smoothed)
 	plt.ylabel('smoothed')
 	plt.show()
-
- 
-
-
-
-
-
-
