@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import skin_detection as sd
+import SkinColorClassifier as SCC
 
 def frame2data(frame):
     
@@ -34,10 +35,18 @@ img_dir = "hand_photo.jpg"
 frame = cv2.imread(img_dir, 1)
 #print(frame.shape)
 
-mask = frame2data(frame)
+pos, neg = frame2data(frame)
+scc = SCC.SkinColorClassifier(pos, neg)
+new_image = frame
+for i in range(frame.shape[0]):
+    for j in range(frame.shape[1]):
+        if scc.classify(frame[i, j]) == 1:
+            new_image[i, j] = [255, 0, 0]
+        else:
+            new_image[i, j] = [0, 0, 0]
 
-#cv2.imshow('mask', mask)
-#cv2.waitKey()
+cv2.imshow('mask', new_image)
+cv2.waitKey()
 '''
     if cv2.waitKey(5) & 0xFF == 27:
         cv2.destroyAllWindows()

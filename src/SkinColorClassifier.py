@@ -21,10 +21,10 @@ class SkinColorClassifier():
         print(time.time()-tic)
 
     def classify(self, point):
-        tic = time.time()
+        #tic = time.time()
         point = np.array(point)
         point = point.reshape(1,-1)
-        print(time.time()-tic)
+        #print(time.time()-tic)
         return self.forest.predict(point)
 
 if __name__ == '__main__':
