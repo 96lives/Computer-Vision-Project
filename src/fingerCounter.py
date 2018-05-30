@@ -59,12 +59,15 @@ class FingerCounter():
             cv2.imshow('mask', mask)
 
             if shake_sw is False:
-                shake_ended = shaker.shake_detect(mask)
+                shake_ended = shaker.shake_detect(mask, frame)
+                # skin_avg = shaker.update_image()
+
 
             if shake_ended is True:
                 if shake_sw is False:
                     print('shake ended')
                     time.sleep(2)
+                    classifier = shaker.getClassifier()
                     shake_sw = True
                 frame, finger_cnt = count_finger(frame, mask)
                 print(finger_cnt)
