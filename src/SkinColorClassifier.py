@@ -51,14 +51,15 @@ class SkinColorClassifier():
         print(candidates)
 
         reshaped_img = img.reshape(-1, 3)
-        reshaped_img[candidates] = [255, 0,0 ]
-        cv2.imshow('z',reshaped_img)
-        cv2.waitKey(0)
+        #reshaped_img[candidates] = [255, 0,0 ]
+        #reshaped_img = reshaped_img.reshape(w, h, c)
+        #cv2.imshow('z',reshaped_img)
+        #cv2.waitKey(0)
 
         logits =  self.rf.classify(reshaped_img[candidates])
         print(logits)
         skin_idx = np.nonzero(np.array(logits) == 1)
-        reshaped_img[skin_idx] = [0, 0, 255]
+        reshaped_img[candidates[skin_idx]] = [0, 0, 255]
         
         return reshaped_img.reshape(w, h, c) 
 
