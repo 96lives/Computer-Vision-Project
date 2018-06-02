@@ -33,19 +33,43 @@ def frame2data(frame):
 
 img_dir = "hand_photo.jpg"
 frame = cv2.imread(img_dir, 1)
+frame = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+
 #print(frame.shape)
 
+def classify_pixel(pixel, scc):
+    if scc.classify(pixel) == 1:
+        return [255, 0, 0]
+    return pixel
+
+w, h, channel = frame.shape
 pos, neg = frame2data(frame)
 scc = SCC.SkinColorClassifier(pos, neg)
-new_image = frame
+frame = frame.reshape(-1, 3)
+mask = scc.classify(frame)
+mask = np.asarray(mask).reshape(w, h)
+print(mask.shape)
+mask[mask>0] = 255
+mask[mask<0] = 0
+
+
+#frame = frame.swapaxes(2, 0).copy(order='C')
+#print(frame)
+#for x in np.nditer(frame, flags=['external_loop'], op_flags=['readwrite'], order='F'):
+    #classify_pixel(x, scc)
+    #print(x)
+#    print(classify_pixel(x, scc))
+
+'''
 for i in range(frame.shape[0]):
     for j in range(frame.shape[1]):
+        print(str(i) + ',' + str(j))
         if scc.classify(frame[i, j]) == 1:
             new_image[i, j] = [255, 0, 0]
         else:
             new_image[i, j] = [0, 0, 0]
-
-cv2.imshow('mask', new_image)
+'''
+cv2.imshow('mask', mask)
 cv2.waitKey()
 '''
     if cv2.waitKey(5) & 0xFF == 27:
