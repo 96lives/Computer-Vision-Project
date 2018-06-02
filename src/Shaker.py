@@ -82,14 +82,12 @@ class Shaker():
 					num_min += 1
 					if num_min is 1:
 						self.min_image = frame
-						self.min_binary = binary
 					self.minima.append(arr[i])
 				if (arr[i] > arr[i-1] + margin and arr[i] > arr[i+1]) \
 					or (arr[i] > arr[i-1] and arr[i] > arr[i+1] + margin) :
 					num_max += 1
 					if num_max is 1:
 						self.max_image = frame
-						self.min_binary = binary
 			self.smoothed = arr
 			return num_min, num_max
 		return 0, 0
@@ -127,27 +125,12 @@ class Shaker():
 	def get_flow_pixel(self):
 		return self.flow_pix
 
-	def update_image(self):
+	def get_minmax_image(self):
 		if self.min_image is None:
-			return 0
+			return False
 		if self.max_image is None:
-			return 0
-		return self.average_skin()
-
-	def average_skin(self):
-		epsilon = 10
-		mask = cv2.inRange(abs(self.min_image - self.max_image), epsilon, 255)
-		minmask = cv2.bitwise_and(mask, self.min_binary)
-		maxmask = cv2.bitwise_and(mask, self.max_binary)
-		maximg = cv2.bitwise_and(maxmask, self.max_image)
-		idx = np.argwhere(maximg > 0)
-		avg = np.average(maximg[idx])
-		return avg
-
-	def getClassifier(self):
-		avg = self.average_skin()
-		data = 1
-
+			return False
+		return self.min_image, self.max_image
 
 	def shake_detect(self, binary, frame):
 		#p0, p1, st = self.optical_flow(binary)
