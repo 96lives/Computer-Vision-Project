@@ -11,7 +11,7 @@ class FingerCounter():
 
     def __init__(self, mode, \
             in_dir=None, out_dir=None):
-        
+
         if mode == 'background':
             self.is_background = True
         elif mode == 'skin':
@@ -24,7 +24,7 @@ class FingerCounter():
         self.is_webcam = True
         if in_dir is not None:
             self.is_webcam = False
-        
+
     def play_game(self):
         cap = None
         bgs = None
@@ -40,11 +40,11 @@ class FingerCounter():
             cap = cv2.VideoCapture(0)
         else:
             cap = cv2.VideoCapture(self.in_dir)
-            fourcc = cv2.VideoWriter_fourcc(*'XVID') 
+            fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter(self.out_dir, fourcc,\
                     round(cap.get(5)), \
                     (int(cap.get(3)),int(cap.get(4))))
-       
+
         while cap.isOpened():
             ret, frame = cap.read()
             if ret is False:
@@ -59,7 +59,7 @@ class FingerCounter():
             cv2.imshow('mask', mask)
 
             if shake_sw is False:
-                shake_ended = shaker.shake_detect(mask)
+                shake_ended = shaker.shake_detect(mask, frame)
 
             if shake_ended is True:
                 if shake_sw is False:
@@ -74,7 +74,7 @@ class FingerCounter():
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
-        
+
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')
         #plt.show()
@@ -88,7 +88,7 @@ class FingerCounter():
         cv2.destroyAllWindows()
 
 class UnavailableModeError(Exception):
-    
+
     def __str__(self):
         return "only 'skin' or 'background' is available"
 
@@ -96,7 +96,7 @@ def count_finger(frame, mask):
     if mask is None:
         return frame, 0
     max_contour = find_max_contour(mask)
-    if max_contour is None: 
+    if max_contour is None:
         return frame, 0
 
     x,y,w,h = cv2.boundingRect(max_contour)
@@ -116,15 +116,19 @@ def count_finger(frame, mask):
                 c = compute_distance(end, far)
                 angle = compute_angle(a, b, c)
                 # treat fingers with angle <= 90
-                if angle <= (math.pi / 2):  
+                if angle <= (math.pi / 2):
                     cnt += 1
+                    frame = cv2.circle(frame, \
+                            start, 8, [21, 84, 0], -1)
+                    frame = cv2.circle(frame, \
+                            end, 8, [21, 84, 124], -1)
                     frame = cv2.circle(frame, \
                             far, 8, [211, 84, 0], -1)
             return frame, cnt
     return frame, 0
 
 def find_max_contour(mask):
- 
+
     _, contours, hierarchy = cv2.findContours(mask,\
             cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     #Find Max contour area (Assume that hand is in the frame)
