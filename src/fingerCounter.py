@@ -5,6 +5,7 @@ import BackgroundSubtractor as bg
 import Shaker as sh
 import matplotlib.pyplot as plt
 import time
+import numpy as np
 
 
 class FingerCounter():
@@ -98,6 +99,12 @@ def count_finger(frame, mask):
     max_contour = find_max_contour(mask)
     if max_contour is None:
         return frame, 0
+    
+    active_idx = np.argwhere(mask > 0)
+    center_y = math.floor(np.average([idx[0] for idx in active_idx]))
+    center_x = math.floor(np.average([idx[1] for idx in active_idx]))
+    center = (center_x, center_y)
+    frame = cv2.circle(frame, center, 16, [255,0,0], -1)
 
     x,y,w,h = cv2.boundingRect(max_contour)
     frame = cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
@@ -119,11 +126,15 @@ def count_finger(frame, mask):
                 if angle <= (math.pi / 2):
                     cnt += 1
                     frame = cv2.circle(frame, \
-                            start, 8, [21, 84, 0], -1)
+                            start, 8, [125, 125, 0], -1)
                     frame = cv2.circle(frame, \
-                            end, 8, [21, 84, 124], -1)
+                            end, 8, [0, 0, 255], -1)
                     frame = cv2.circle(frame, \
                             far, 8, [211, 84, 0], -1)
+                    frame = cv2.line(frame, \
+                            center, start, [100,100,100], 3)
+                    frame = cv2.line(frame, \
+                            center, end, [100,100,100], 3)
             return frame, cnt
     return frame, 0
 
