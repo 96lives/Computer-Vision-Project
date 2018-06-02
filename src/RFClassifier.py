@@ -2,7 +2,7 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 import time
 
-class SkinColorClassifier():
+class RFClassifier():
 
     def __init__(self, positive, negative): # n by 3(hsv) matrix
         positive = np.array(positive)
