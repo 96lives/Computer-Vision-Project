@@ -15,7 +15,7 @@ class RFClassifier():
         np.random.shuffle(data)
         X_train = data[:,:-1]
         y_train = data[:,-1]
-        self.forest = RandomForestClassifier(n_estimators = 20, n_jobs = -1)
+        self.forest = RandomForestClassifier(n_estimators = 10, n_jobs = -1)
         tic = time.time()
         self.forest.fit(X_train, y_train)
         print(time.time()-tic)
