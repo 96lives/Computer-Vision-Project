@@ -67,10 +67,16 @@ if __name__ == '__main__':
 
     dir1 = "../data/img_min.png"
     dir2 = "../data/img_max.png"
+    test_dir = "../data/img_test.png"
     min_img = cv2.imread(dir1)
+    min_img = cv2.resize(min_img, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
     max_img = cv2.imread(dir2)
+    max_img = cv2.resize(max_img, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
+    test_img = cv2.imread(test_dir)
+    copy = test_img 
     scc = SkinColorClassifier(min_img, max_img)
-    out = scc.mask_with_classifier(min_img)
-    cv2.imshow('out', out)
+    out = scc.mask_with_classifier(test_img)
+    cv2.imshow('fixed mask', sd.mask_skin())
+    cv2.imshow('rf mask', out)
     cv2.waitKey(0)
     
