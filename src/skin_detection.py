@@ -5,6 +5,7 @@ import time
 
 def detect_skin(frame):
     frame = mask_skin(frame)
+    cv2.imshow('skin mask', frame)
     return morphological_transform(frame)
 
 def mask_skin(frame):
@@ -21,27 +22,18 @@ def mask_skin(frame):
     return mask
 
 
-def morphological_transform(frame):
+def morphological_transform(mask):
+
+    kernel_ellipse7= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(7,7))
+    kernel_ellipse5= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+    erosion = cv2.erode(mask,kernel_ellipse7,iterations = 1)    
+    dilation = cv2.dilate(erosion,kernel_ellipse5,iterations = 1)
     
-    # Kernel matrices for morphological transformation
-    kernel_square = np.ones((21,21),np.uint8)
-    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(1, 1))
-
-    #Perform morphological transformations to filter out the background noise
-    #Dilation increase skin color area
-    #Erosion increase skin color area
-    #dilation = cv2.dilate(frame, kernel_ellipse,iterations = 1)
-    erosion = cv2.erode(frame,kernel_square,iterations = 1)
-    #dilation2 = cv2.dilate(erosion,kernel_ellipse,iterations = 1)
-    cv2.imshow('erosion', erosion)
-    #filtered = cv2.medianBlur(dilation2,11)
-    #kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(8,8))
-    #dilation2 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
-    median = cv2.medianBlur(erosion,5)
-    cv2.imshow('median', median)
-    #ret,thres = cv2.threshold(median,127,255,0)
-
-    # check is the thres is GBR format
+    kernel_ellipse3= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+    erosion = cv2.dilate(mask,kernel_ellipse3,iterations = 1)    
+    dilation = cv2.erode(erosion,kernel_ellipse5,iterations = 1)
+    median = cv2.medianBlur(dilation,5)
+    
     if len(median.shape) == 3:
         median = cv2.cvtColor(median, cv2.COLOR_BGR2GRAY) 
     return median

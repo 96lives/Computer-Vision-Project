@@ -5,6 +5,7 @@ import background_subtractor as bg
 import shaker as sh
 import matplotlib.pyplot as plt
 import time
+from skin_color_classifier import SkinColorClassifier
 
 
 class FingerCounter():
@@ -30,8 +31,9 @@ class FingerCounter():
         bgs = None
 
         shaker = sh.Shaker()
-        shake_sw = False
+        shake_switch = False
         shake_ended = False
+        scc = None
 
         if self.is_background:
             bgs = bg.BackgroundSubtractor(self.is_webcam)
@@ -49,28 +51,31 @@ class FingerCounter():
             ret, frame = cap.read()
             if ret is False:
                 break
-            frame = cv2.resize(frame,(640,480))
+            frame = cv2.resize(frame,(320,240))
             if self.is_background:
                 mask = bgs.process_frame(frame)
                 if mask is None:
                     continue
             else:
-                mask = sd.mask_skin(frame)
+                mask = sd.detect_skin(frame)
             cv2.imshow('mask', mask)
 
-            if shake_sw is False:
-                shake_ended = shaker.shake_detect(mask, frame)
-                # skin_avg = shaker.update_image()
-
-
             if shake_ended is True:
-                if shake_sw is False:
+                if shake_switch is False:
                     print('shake ended')
-                    time.sleep(2)
-                    classifier = shaker.getClassifier()
-                    shake_sw = True
+                    #time.sleep(2)
+                    shake_switch = True
+                    img1, img2 = shaker.get_minmax_image()
+                    scc = SkinColorClassifier(img1, img2)
+
                 frame, finger_cnt = count_finger(frame, mask)
                 print(finger_cnt)
+    
+            if shake_switch is False:
+                shake_ended = shaker.shake_detect(mask, frame)
+            else:
+                mask1 = scc.mask_image(frame)
+                cv2.imshow('scc mask', mask1)
 
             cv2.imshow('frame', frame)
             #time.sleep(0.5)
@@ -87,7 +92,6 @@ class FingerCounter():
         plt.show()
 
         cap.release()
-        out.write(frame)
         cv2.destroyAllWindows()
 
 class UnavailableModeError(Exception):

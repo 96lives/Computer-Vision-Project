@@ -53,6 +53,7 @@ class SkinColorClassifier():
         pos_mask = img_mask - and_mask
         pos_mask[pos_mask < 0] = 0
         pos_img = cv2.bitwise_and(img, img, mask=pos_mask)
+        cv2.imwrite('data.jpg', pos_img)
         img = pos_img.reshape(-1, 3)
         pos_mask = pos_mask.reshape(-1, 1)
         pos_bool = np.nonzero(pos_mask)
@@ -76,7 +77,6 @@ class SkinColorClassifier():
         # classify
         start_time = time.time()
         logits =  self.classifier.classify(reshaped_img[candidates])
-        print("Actual Test Time: " + str(time.time() - start_time))
         # collect skin pixels
         skin_idx = np.nonzero(np.array(logits) == 1)
         out[candidates[skin_idx]] = 255
