@@ -15,7 +15,7 @@ class KNNClassifier():
         np.random.shuffle(data)
         self.X_train = data[:,:-1]
         self.y_train = data[:,-1]
-        self.neigh = KNeighborsClassifier(n_neighbors=3)
+        self.neigh = KNeighborsClassifier(n_neighbors=15)
         tic = time.time()
         self.neigh.fit(self.X_train, self.y_train)
         print(time.time()-tic)
