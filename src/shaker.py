@@ -47,14 +47,16 @@ class Shaker():
 				if (arr[i] < arr[i-1] - margin and arr[i] < arr[i+1]) \
 					or (arr[i] < arr[i-1] and arr[i] < arr[i+1] - margin) :
 					num_min += 1
-					if num_min is 1:
+					if self.min_image is None:
 						self.min_image = frame
+						print('min saved')
 					self.minima.append(arr[i])
-				if (arr[i] > arr[i-1] + margin and arr[i] > arr[i+1]) \
+				elif (arr[i] > arr[i-1] + margin and arr[i] > arr[i+1]) \
 					or (arr[i] > arr[i-1] and arr[i] > arr[i+1] + margin) :
 					num_max += 1
-					if num_max is 1:
+					if self.max_image is None:
 						self.max_image = frame
+						print('max saved')
 			self.smoothed = arr
 			return num_min, num_max
 		return 0, 0
@@ -92,6 +94,8 @@ class Shaker():
 			return False
 		if self.max_image is None:
 			return False
+		cv2.imwrite('maxi.jpg', self.max_image)
+		cv2.imwrite('mini.jpg', self.min_image)
 		return self.min_image, self.max_image
 
 	def shake_detect(self, binary, frame):
