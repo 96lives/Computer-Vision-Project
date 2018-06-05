@@ -18,8 +18,7 @@ class SkinColorClassifier():
         self.classifier = knn.KNNClassifier(pos, neg)
      
     def get_data(self, min_img, max_img):
-
-        # get and and  
+        
         min_mask = sd.mask_skin(min_img)
         max_mask = sd.mask_skin(max_img)
 
@@ -56,11 +55,11 @@ class SkinColorClassifier():
 
         return pos, neg
     
+    
     def mask_with_classifier(self, img):
-        
 
-        blur_k_size = (11, 11)        
-        img = cv2.blur(img, blur_k_size)
+        #blur_k_size = (11, 11)        
+        #img = cv2.blur(img, blur_k_size)
         
         w, h, c = img.shape
         mask = sd.mask_skin(img)
@@ -81,12 +80,13 @@ if __name__ == '__main__':
     dir1 = "../data/img_min.png"
     dir2 = "../data/img_max.png"
     test_dir = "../data/img_test.png"
+
     min_img = cv2.imread(dir1)
     min_img = cv2.resize(min_img, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
     max_img = cv2.imread(dir2)
     max_img = cv2.resize(max_img, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
     test_img = cv2.imread(test_dir)
-    test_img = cv2.resize(test_img, None, fx=0.25, fy=0.25, interpolation=cv2.INTER_AREA)
+    test_img = cv2.resize(test_img, None, fx=0.2, fy=0.2, interpolation=cv2.INTER_AREA)
     copy = test_img 
    
     start_time = time.time()
