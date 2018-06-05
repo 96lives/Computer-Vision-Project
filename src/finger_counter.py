@@ -158,4 +158,4 @@ def compute_distance(a, b):
 def compute_angle(a, b, c):
     eps = 1e-10
     return math.acos((b**2 + c**2 - a**2) \
-            / (2*b*c + eps))
+        / (2*b*c + eps))

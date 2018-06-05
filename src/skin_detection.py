@@ -46,30 +46,6 @@ def morphological_transform(frame):
         median = cv2.cvtColor(median, cv2.COLOR_BGR2GRAY) 
     return median
 
-
-def find_max_contour(thres):
- 
-    _, contours, hierarchy = cv2.findContours(thres,\
-            cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    #Find Max contour area (Assume that hand is in the frame)
-    max_area=100
-    ci=0
-    contour = -1
-    for i in range(len(contours)):
-        contour = contours[i]
-        area = cv2.contourArea(contour)
-        if(area>max_area):
-            max_area=area
-            ci=i
-
-   #Largest area contour
-    #print(contours)
-    if (len(contours) != 0):
-        max_contour = contours[ci]
-        return max_contour
-    else:
-        return None
-
 def check_finger(frame, max_contour):
     #Find contours of the filtered frame
     #Find convex hull
