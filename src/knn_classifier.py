@@ -4,7 +4,7 @@ import time
 
 class KNNClassifier():
 
-    def __init__(self, positive, negative, num_neighbors=15): # n by 3(hsv) matrix
+    def __init__(self, positive, negative, num_neighbors=10): # n by 3(hsv) matrix
         positive = np.array(positive)
         negative = np.array(negative)
         y_positive = np.ones((positive.shape[0],1))
@@ -18,15 +18,16 @@ class KNNClassifier():
         self.neigh = KNeighborsClassifier(n_neighbors=num_neighbors)
         tic = time.time()
         self.neigh.fit(self.X_train, self.y_train)
-        print(time.time()-tic)
+        print("Train time: " + str(time.time()-tic))
 
     def classify(self, points):
         tic = time.time()
         points = np.array(points)
         channel = points.shape[1]
         points = points.reshape(-1,channel)
-        print(time.time()-tic)
-        return self.neigh.predict(points)
+        out = self.neigh.predict(points)
+        print("Test time: " +str(time.time()-tic))
+        return out
 
     def train(self, positive, negative):
         positive = np.array(positive)
