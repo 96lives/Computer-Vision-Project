@@ -1,9 +1,0 @@
-1. pose detection
-https://github.com/CMU-Perceptual-Computing-Lab/openpose
-
-2. Rock Scissor Paper 
-https://github.com/DrGFreeman/rps-cv
-
-3. Particle Filter Hand Detection
-http://www.morethantechnical.com/2013/05/26/extending-the-hand-tracker-with-snakes-and-optimizations-w-code-opencv/3. Particle Filter Hand Detection
-
