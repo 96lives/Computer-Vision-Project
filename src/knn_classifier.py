@@ -18,14 +18,14 @@ class KNNClassifier():
         self.neigh = KNeighborsClassifier(n_neighbors=num_neighbors)
         tic = time.time()
         self.neigh.fit(self.X_train, self.y_train)
-        print(time.time()-tic)
+        print("Train time: " + str(time.time()-tic))
 
     def classify(self, points):
         tic = time.time()
         points = np.array(points)
         channel = points.shape[1]
         points = points.reshape(-1,channel)
-        print(time.time()-tic)
+        print("Test time: " +str(time.time()-tic))
         return self.neigh.predict(points)
 
     def train(self, positive, negative):
