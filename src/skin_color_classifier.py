@@ -86,13 +86,18 @@ class SkinColorClassifier():
 if __name__ == '__main__':
 
     # test data 
-    dir1 = "../test-data/classifier_test1.png"
-    dir2 = "../test-data/classifier_test2.png"
+    folder_dir = "../test-data/"
+    img1_dir = folder_dir + "img_max.png"
+    img2_dir = folder_dir + "img_min.png"
+    test_dir = folder_dir + "img_test.png"
+    '''
+    img1_dir = "../test-data/classifier_test1.png"
+    img2_dir = "../test-data/classifier_test2.png"
     test_dir = "../test-data/classifier_test3.png"
-
-    min_img = cv2.imread(dir1)
+    '''
+    min_img = cv2.imread(img1_dir)
     min_img = cv2.resize(min_img, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
-    max_img = cv2.imread(dir2)
+    max_img = cv2.imread(img2_dir)
     max_img = cv2.resize(max_img, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)
     test_img = cv2.imread(test_dir)
     test_img = cv2.resize(test_img, None, fx=0.1, fy=0.1, interpolation=cv2.INTER_AREA)

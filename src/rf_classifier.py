@@ -18,15 +18,16 @@ class RFClassifier():
         self.forest = RandomForestClassifier(n_estimators = 10, n_jobs = -1)
         tic = time.time()
         self.forest.fit(X_train, y_train)
-        print(time.time()-tic)
+        print("Train Time: " + str(time.time()-tic))
 
     def classify(self, points):
         tic = time.time()
         points = np.array(points)
         channel = points.shape[1]
         points = points.reshape(-1,channel)
-        print(time.time()-tic)
-        return self.forest.predict(points)
+        out = self.forest.predict(points)
+        print("Test Time: " + str(time.time()-tic))
+        return out
 
 if __name__ == '__main__':
     pdata = [[1, 2],[1, 3],[1, 4],[1, 5],[1, 6],[1, 7]]
