@@ -32,19 +32,8 @@ class Shaker():
 		self.max_bianry = None
 		self.min_image = None
 		self.max_image = None
-
-	def optical_flow(self, binary):
-		self.flow_pix = []
-		if self.prev_binary is None or binary is None:
-			return None, None, None
-		try:
-			p0 = cv2.goodFeaturesToTrack(self.prev_binary, mask = None, **self.feature_params)
-			p1, st, err = cv2.calcOpticalFlowPyrLK(self.prev_binary, binary, p0, None, **self.lk_params)
-		except Exception as e:
-			self.prev_binary = binary.copy()
-			return None, None, None
-		return p0, p1, st
-
+	
+	
 	def update_flow(self, p0, p1, st):
 		good_new = p1[st==1]
 		good_old = p0[st==1]
@@ -133,9 +122,7 @@ class Shaker():
 		return self.min_image, self.max_image
 
 	def shake_detect(self, binary, frame):
-		#p0, p1, st = self.optical_flow(binary)
-		#if p0 is not None:
-		#	self.update_flow(p0, p1, st)
+	
 		self.update2(binary)
 		num_min, num_max = self.local_minmax(self.yhistory, binary, frame)
 		print('local : ' + str(num_min) + ', ' + str(num_max))

@@ -1,6 +1,6 @@
-import fingerCounter
+import finger_counter
 
 if __name__ == "__main__":
     #fc = fingerCounter.FingerCounter('skin')
-    fc = fingerCounter.FingerCounter('background')
+    fc = finger_counter.FingerCounter('background')
     fc.play_game()    

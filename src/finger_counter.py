@@ -1,8 +1,8 @@
 import cv2
 import math
 import skin_detection as sd
-import BackgroundSubtractor as bg
-import Shaker as sh
+import background_subtractor as bg
+import shaker as sh
 import matplotlib.pyplot as plt
 import time
 
@@ -158,4 +158,4 @@ def compute_distance(a, b):
 def compute_angle(a, b, c):
     eps = 1e-10
     return math.acos((b**2 + c**2 - a**2) \
-        / (2*b*c + eps))
+        / (3*b*c + eps))
