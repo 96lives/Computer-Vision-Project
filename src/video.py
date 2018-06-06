@@ -21,6 +21,7 @@ if __name__ == "__main__":
     pattern = "*.MOV"
 
     for folder in folders:
+        subdir = data_dir + folder
         if os.path.exists(subdir):
             for f in files(subdir):
                 if fnmatch.fnmatch(f, pattern):

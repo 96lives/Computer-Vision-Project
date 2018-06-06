@@ -2,7 +2,7 @@ import cv2
 import math
 import skin_detection as sd
 import background_subtractor as bg
-import shaker as sh
+import shaker2 as sh
 import matplotlib.pyplot as plt
 import time
 from skin_color_classifier import SkinColorClassifier
