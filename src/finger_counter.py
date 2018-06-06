@@ -52,6 +52,11 @@ class FingerCounter():
             if ret is False:
                 break
             frame = cv2.resize(frame,(320,240))
+
+            if not self.is_webcam:
+                frame = cv2.flip(frame, 0)
+                frame = cv2.flip(frame, 1)
+
             if self.is_background:
                 mask = bgs.process_frame(frame)
                 if mask is None:
@@ -63,7 +68,7 @@ class FingerCounter():
             if shake_ended is True:
                 if shake_switch is False:
                     print('shake ended')
-                    #time.sleep(2)
+                    time.sleep(2)
                     shake_switch = True
                     img1, img2 = shaker.get_minmax_image()
                     scc = SkinColorClassifier(img1, img2)
@@ -86,11 +91,11 @@ class FingerCounter():
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')
         #plt.show()
-
+        
         plt.plot(shaker.smoothed)
         plt.ylabel('smoothed')
+        plt.savefig('plot.png')
         plt.show()
-
         cap.release()
         cv2.destroyAllWindows()
 
