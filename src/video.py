@@ -19,6 +19,9 @@ if __name__ == "__main__":
     out_dir = data_dir + "plot/"
     folders = ['P/', 'R/', 'S/']
     pattern = "*.MOV"
+    
+    total_cnt = 0
+    activated_cnt = 0
 
     for folder in folders:
         subdir = data_dir + folder
@@ -30,5 +33,11 @@ if __name__ == "__main__":
                     fc = FingerCounterTester(f, \
                             "report.txt", in_dir, \
                             out_dir)
-                    fc.play_game()
-                
+                    activated_cnt += fc.play_game()
+                    total_cnt += 1
+
+    print("activated number of shaker: " + str(activated_cnt))
+    print("Whole dataset: " + str(total_cnt))
+
+
+

@@ -92,6 +92,10 @@ class FingerCounterTester():
         plt.clf()
         cap.release()
         cv2.destroyAllWindows()
+        if shake_switch:
+            return 1
+        else:
+            return 0
 
 class UnavailableModeError(Exception):
     
