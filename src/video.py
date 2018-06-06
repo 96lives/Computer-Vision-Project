@@ -1,7 +1,7 @@
 import os 
 import fnmatch
 import skin_detection as sd
-from finger_counter_tester import FingerCounterTester
+from finger_counter_tester import FingerCounter2
 import cv2
 
 #file_name = "test.MOV"
@@ -30,7 +30,7 @@ if __name__ == "__main__":
                 if fnmatch.fnmatch(f, pattern):
                     in_dir = subdir
                     file_name = folder + 'out' + f
-                    fc = FingerCounterTester(f, \
+                    fc = FingerCounter2(f, \
                             "report.txt", in_dir, \
                             out_dir)
                     activated_cnt += fc.play_game()

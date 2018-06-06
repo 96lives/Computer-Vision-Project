@@ -35,7 +35,8 @@ class SkinColorClassifier():
         pos = self.collect_pos_data(img1, mask1, and_mask)
         # mask pos image of max_image
         pos = np.append(pos, \
-            self.collect_pos_data(img2, mask2, and_mask), axis=0)
+            self.collect_pos_data(img2, \
+            mask2, and_mask), axis=0)
 
         return pos, neg
 
@@ -72,7 +73,7 @@ class SkinColorClassifier():
 
         # reshaped image for collecting pixels
         reshaped_img = img.reshape(-1, 3)
-        out = np.zeros(reshaped_img.shape)
+        out = np.zeros(w*h, np.uint8)
 
         # classify
         start_time = time.time()
@@ -80,7 +81,7 @@ class SkinColorClassifier():
         # collect skin pixels
         skin_idx = np.nonzero(np.array(logits) == 1)
         out[candidates[skin_idx]] = 255
-        out = out.reshape(w, h, c)
+        out = out.reshape(w, h)
         return out
 
 if __name__ == '__main__':
