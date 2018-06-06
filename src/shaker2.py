@@ -20,7 +20,7 @@ class Shaker():
 		self.min_image = None
 		self.max_image = None
 
-		self.start_frame = None
+		self.start_frame = 0
 		self.num_frame = 0
 	
 	def local_minmax(self, arr, binary, frame):
@@ -30,43 +30,46 @@ class Shaker():
 		amplitude = 30
 		mini = 9999
 		maxi = -9999
-		find = None # find min/max
+		find = 'start' # find min/max
 		arr = np.array(arr)#.reshape((-1,1)) # (a,1) numpy array
-		if arr.shape[0] > 20 and self.start_frame is not None:
-			start = arr[self.start_frame]
+		if arr.shape[0] > 3 and self.start_frame is not None:
 			arr = np.convolve(arr, [1/16,4/16,6/16,4/16,1/16], 'same')
 			arr[0] = arr[2]
 			arr[1] = arr[2]
 			arr[-1] = arr[-3]
 			arr[-2] = arr[-3]
-			for i in range(max(self.start_frame,1), len(arr)-1): # minimum: slower
-				if find is None:
-					if (arr[i] > start + start_amplitude) and arr[i] >= arr[i+1]:
+			start = arr[self.start_frame]
+			for i in range(max(self.start_frame,0), len(arr)-2): # minimum: slower
+				#print(find)
+				if find == 'start':
+					if (arr[i] > start + start_amplitude) and arr[i-1] >= arr[i]:
 						num_max += 1
 						maxi = arr[i]
 						find = 'min'
+						#print('max test {} {} {} {} {} '.format(i, arr[i], start, self.start_frame, start_amplitude))
 						if self.max_image is None:
 							self.max_image = frame
 							print('max saved: {} , frame {}'.format(maxi, i))
-					elif (arr[i] < start - start_amplitude) and arr[i] <= arr[i+1]:
+					elif (arr[i] < start - start_amplitude) and arr[i-1] <= arr[i]:
 						num_min += 1
 						mini = arr[i]
 						find = 'max'
+						#print('min test {} {} {} {} {} '.format(i, arr[i], start, self.start_frame, start_amplitude))
 						if self.min_image is None:
 							self.min_image = frame
 							print('min saved: {} , frame {}'.format(mini, i))
 						self.minima.append(arr[i])
 
-				elif find is 'max':
-					if (arr[i] > mini + amplitude) and arr[i] >= arr[i+1]:
+				elif find == 'max':
+					if (arr[i] > mini + amplitude) and arr[i-1] >= arr[i]:
 						num_max += 1
 						maxi = arr[i]
 						find = 'min'
 						if self.max_image is None:
 							self.max_image = frame
 							print('max saved: {} , frame {}'.format(maxi, i))
-				elif find is 'min':
-					if (arr[i] < maxi - amplitude) and arr[i] <= arr[i+1]:
+				elif find == 'min':
+					if (arr[i] < maxi - amplitude) and arr[i-1] <= arr[i]:
 						num_min += 1
 						mini = arr[i]
 						find = 'max'
