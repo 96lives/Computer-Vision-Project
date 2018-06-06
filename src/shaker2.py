@@ -22,6 +22,10 @@ class Shaker():
 
 		self.start_frame = 0
 		self.num_frame = 0
+
+		self.frame_1 = None
+		self.frame_2 = None
+		self.frame_3 = None
 	
 	def local_minmax(self, arr, binary, frame):
 		num_min = 0
@@ -48,7 +52,7 @@ class Shaker():
 						find = 'min'
 						#print('max test {} {} {} {} {} '.format(i, arr[i], start, self.start_frame, start_amplitude))
 						if self.max_image is None:
-							self.max_image = frame
+							self.max_image = self.frame_3
 							print('max saved: {} , frame {}'.format(maxi, i))
 					elif (arr[i] < start - start_amplitude) and arr[i-1] <= arr[i]:
 						num_min += 1
@@ -56,7 +60,7 @@ class Shaker():
 						find = 'max'
 						#print('min test {} {} {} {} {} '.format(i, arr[i], start, self.start_frame, start_amplitude))
 						if self.min_image is None:
-							self.min_image = frame
+							self.min_image = self.frame_3
 							print('min saved: {} , frame {}'.format(mini, i))
 						self.minima.append(arr[i])
 
@@ -66,7 +70,7 @@ class Shaker():
 						maxi = arr[i]
 						find = 'min'
 						if self.max_image is None:
-							self.max_image = frame
+							self.max_image = self.frame_3
 							print('max saved: {} , frame {}'.format(maxi, i))
 				elif find == 'min':
 					if (arr[i] < maxi - amplitude) and arr[i-1] <= arr[i]:
@@ -74,7 +78,7 @@ class Shaker():
 						mini = arr[i]
 						find = 'max'
 						if self.min_image is None:
-							self.min_image = frame
+							self.min_image = self.frame_3
 							print('min saved: {} , frame {}'.format(mini, i))
 						self.minima.append(arr[i])
 			self.smoothed = arr
@@ -99,6 +103,10 @@ class Shaker():
 			self.start_frame = self.num_frame
 			print("start shake detection : frame "+str(self.num_frame))
 		self.num_frame += 1
+		self.frame_3 = self.frame_2
+		self.frame_2 = self.frame_1
+		self.frame_1 = frame
+
 
 	def get_minmax_image(self):
 		if self.min_image is None:
@@ -110,7 +118,7 @@ class Shaker():
 		return self.min_image, self.max_image
 
 	def shake_detect(self, binary, frame):
-		self.update(binary)
+		self.update(binary, frame)
 		num_min, num_max = self.local_minmax(self.yhistory, binary, frame)
 		if num_min + num_max is not 0: 
 			print('local : ' + str(num_min) + ', ' + str(num_max))
