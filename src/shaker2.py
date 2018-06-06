@@ -31,7 +31,7 @@ class Shaker():
 		num_min = 0
 		num_max = 0
 		start_amplitude = 10
-		amplitude = 15
+		amplitude = 10
 		mini = 9999
 		maxi = -9999
 		find = 'start' # find min/max

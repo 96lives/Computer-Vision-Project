@@ -68,9 +68,9 @@ class FingerCounter2():
                     #time.sleep(2)
                     shake_switch = True
                     img1, img2 = shaker.get_minmax_image()
-                    #cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
-                    #cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
-                    #f.write(str(frame_cnt))
+                    cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
+                    cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
+                    f.write(str(frame_cnt))
                 
                 decision_cnt += 1    
                 frame, finger_cnt = count_finger(frame, mask)

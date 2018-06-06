@@ -5,11 +5,6 @@ from finger_counter2 import FingerCounter2
 import cv2
 import matplotlib.pyplot as plt
 
-#file_name = "test.MOV"
-#out_dir = "output.avi"
-#cap = cv2.VideoCapture(file_name)
-#fc = FC.FingerCounter('skin', file_name, out_dir)
-#fc.play_game()
 def files(path):
     for file in os.listdir(path):
         if os.path.isfile(os.path.join(path, file)):
@@ -17,7 +12,7 @@ def files(path):
 
 if __name__ == "__main__":
     data_dir = "../data/"
-    out_dir = data_dir + "out/"
+    out_dir = data_dir + "plot/"
     folders = ['P/', 'R/', 'S/']
     pattern = "*.MOV"
     
@@ -34,7 +29,7 @@ if __name__ == "__main__":
                     file_name = folder + 'out' + f
                     fc = FingerCounter2(f, \
                             "report.txt", in_dir, \
-                            out_dir + folder)
+                            out_dir)
                     cnt_list = fc.play_game()
                     if len(cnt_list) != 0:
                         print(cnt_list)
