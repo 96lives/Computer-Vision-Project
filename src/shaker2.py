@@ -31,7 +31,7 @@ class Shaker():
 		num_min = 0
 		num_max = 0
 		start_amplitude = 10
-		amplitude = 20
+		amplitude = 12
 		mini = 9999
 		maxi = -9999
 		find = 'start' # find min/max
@@ -85,7 +85,7 @@ class Shaker():
 			return num_min, num_max
 		return 0, 0
 
-	def update(self, binary):
+	def update(self, binary, frame):
 		h = binary.shape[0]
 		w = binary.shape[1]
 		weighted_y_sum = 0
