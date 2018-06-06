@@ -11,13 +11,15 @@ from skin_color_classifier import SkinColorClassifier
 class FingerCounterTester():
 
     def __init__(self, video_name, \
-            report_name, in_dir, out_dir):
+            report_name, in_dir, \
+            out_dir, save_video=False):
         
         self.video_name = video_name
         self.report_name = report_name
         self.in_dir = in_dir
         self.out_dir = out_dir
-        
+        self.save_video = save_video
+
     def play_game(self):
 
         shaker = sh.Shaker()
@@ -28,9 +30,15 @@ class FingerCounterTester():
         frame_cnt = 0
         f = open(self.out_dir + self.report_name, 'a')
         f.write(self.video_name + ": ")
-
         pure_video_name = self.video_name.replace('.MOV', '')
-        
+        frame_size = (320, 240)
+
+        if self.save_video:
+            fourcc = cv2.VideoWriter_fourcc(*'XVID') 
+            out = cv2.VideoWriter(
+                    self.out_dir + pure_video_name + "out.avi",\
+                    fourcc, round(cap.get(5)), \
+                    frame_size)
         
         while cap.isOpened():
             ret, frame = cap.read()
@@ -38,14 +46,18 @@ class FingerCounterTester():
 
             if ret is False:
                 break
-            frame = cv2.resize(frame,(320,240))
+            frame = cv2.resize(frame, frame_size)
 
             frame = cv2.flip(frame, 0)
             frame = cv2.flip(frame, 1)
 
             mask = sd.detect_skin(frame)
             cv2.imshow('mask', mask)
-            
+
+            if self.save_video:
+                out.write(cv2.cvtColor(mask,\
+                    cv2.COLOR_GRAY2BGR))
+
             if shake_ended is True:
                 if shake_switch is False:
                     print('shake ended')
@@ -69,6 +81,8 @@ class FingerCounterTester():
         
         f.write('\n')
         f.close()
+        if self.save_video:
+            out.release()
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')
         
