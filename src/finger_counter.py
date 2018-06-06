@@ -8,6 +8,8 @@ import time
 from skin_color_classifier import SkinColorClassifier
 
 
+out_file = "../data/plot/shaker-history-hard-removed.txt"
+
 class FingerCounter():
 
     def __init__(self, mode, \
@@ -47,8 +49,16 @@ class FingerCounter():
                     round(cap.get(5)), \
                     (int(cap.get(3)),int(cap.get(4))))
        
+
+        frame_cnt = 0
+        f = open(out_file, 'a')
+        f.write(self.in_dir.replace('../data/', '') + ": ")
+        
+
         while cap.isOpened():
             ret, frame = cap.read()
+            frame_cnt += 1
+
             if ret is False:
                 break
             frame = cv2.resize(frame,(320,240))
@@ -64,14 +74,15 @@ class FingerCounter():
             else:
                 mask = sd.detect_skin(frame)
             cv2.imshow('mask', mask)
-
+            
             if shake_ended is True:
                 if shake_switch is False:
                     print('shake ended')
-                    time.sleep(2)
+                    #time.sleep(2)
                     shake_switch = True
                     img1, img2 = shaker.get_minmax_image()
                     scc = SkinColorClassifier(img1, img2)
+                    f.write(str(frame_cnt))
 
                 frame, finger_cnt = count_finger(frame, mask)
                 print(finger_cnt)
@@ -88,12 +99,15 @@ class FingerCounter():
             if k == 27:
                 break
         
+        f.write('\n')
+        f.close()
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')
         
         plt.plot(shaker.smoothed)
         plt.ylabel('smoothed')
         plt.savefig(self.out_dir)
+        plt.clf()
         cap.release()
         cv2.destroyAllWindows()
 

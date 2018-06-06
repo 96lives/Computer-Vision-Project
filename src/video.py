@@ -17,7 +17,7 @@ def files(path):
 if __name__ == "__main__":
     data_dir = "../data/"
     output_dir = data_dir + "plot/"
-    folders = ['smallP/']
+    folders = ['P/', 'R/', 'S/']
     pattern = "*.MOV"
 
     for folder in folders:
@@ -27,11 +27,9 @@ if __name__ == "__main__":
                 if fnmatch.fnmatch(f, pattern):
                     in_dir = subdir+f
                     file_name = folder + 'out' + f
-                    plot_name = output_dir + f[0:len(f)-4] + ".png"
+                    plot_name = output_dir +\
+                            f[0:len(f)-4] + ".png"
                     fc = FingerCounter("skin",\
                             in_dir, plot_name)
                     fc.play_game()
-                    #fc_bgs = FC.FingerCounter("background",\
-                    #        in_dir, bgs_out_dir)
-                    #fc_bgs.play_game()
                 
