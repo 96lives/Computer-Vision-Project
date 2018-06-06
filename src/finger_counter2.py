@@ -25,6 +25,7 @@ class FingerCounter2():
         shaker = sh.Shaker()
         shake_switch = False
         shake_ended = False
+        cnt_list = []
 
         cap = cv2.VideoCapture(self.in_dir+self.video_name)
         frame_cnt = 0
@@ -40,6 +41,9 @@ class FingerCounter2():
                     fourcc, round(cap.get(5)), \
                     frame_size)
         
+        avg = 0
+        decision_cnt = 0 
+
         while cap.isOpened():
             ret, frame = cap.read()
             frame_cnt += 1
@@ -64,11 +68,29 @@ class FingerCounter2():
                     #time.sleep(2)
                     shake_switch = True
                     img1, img2 = shaker.get_minmax_image()
-                    cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
-                    cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
-                    f.write(str(frame_cnt))
-
+                    #cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
+                    #cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
+                    #f.write(str(frame_cnt))
+                
+                decision_cnt += 1    
                 frame, finger_cnt = count_finger(frame, mask)
+                skip_frames = 10
+                alpha = 0.3
+
+                if decision_cnt == skip_frames:
+                    mu = finger_cnt
+                elif decision_cnt > skip_frames:
+                    mu = alpha * finger_cnt + (1-alpha) * mu
+                    cnt_list.append(mu)
+                if finger_cnt == 0:
+                    print("Rock")
+                elif finger_cnt == 1:
+                    print("Scissor")
+                else: 
+                    print("Paper")
+        
+
+
                 print(finger_cnt)
     
             if shake_switch is False:
@@ -83,24 +105,39 @@ class FingerCounter2():
         f.close()
         if self.save_video:
             out.release()
-        plt.plot(shaker.yhistory)
-        plt.ylabel('avg y')
+        #plt.plot(shaker.yhistory)
+        #plt.ylabel('avg y')
         
-        plt.plot(shaker.smoothed)
-        plt.ylabel('smoothed')
-        plt.savefig(self.out_dir + pure_video_name + "_plot.png")
-        plt.clf()
+        #plt.plot(shaker.smoothed)
+        #plt.ylabel('smoothed')
+        #plt.savefig(self.out_dir + pure_video_name + "_plot.png")
+        #plt.clf()
+
+        #plt.plot(cnt_list)
+        #plt.savefig(self.out_dir + pure_video_name + \
+        #        "_finger_plot.png")
+        #plt.clf()
+
         cap.release()
         cv2.destroyAllWindows()
+        return cnt_list
+        '''
         if shake_switch:
-            return 1
+            return 
         else:
             return 0
+        '''
+
 
 class UnavailableModeError(Exception):
     
     def __str__(self):
         return "only 'skin' or 'background' is available"
+
+def put_text_in_frame(frame, arg):
+    cv2.putText(frame, arg, (0,0), cv2.FONT_HERSHEY_SIMPLEX\
+            , 4, (255, 255, 255), 2)
+     
 
 def count_finger(frame, mask):
     if mask is None:
