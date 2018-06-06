@@ -90,12 +90,10 @@ class FingerCounter():
         
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')
-        #plt.show()
         
         plt.plot(shaker.smoothed)
         plt.ylabel('smoothed')
-        plt.savefig('plot.png')
-        plt.show()
+        plt.savefig(self.out_dir)
         cap.release()
         cv2.destroyAllWindows()
 

@@ -1,8 +1,7 @@
 import os 
 import fnmatch
 import skin_detection as sd
-import BackgroundSubtractor as BGS
-import fingerCounter as FC
+from finger_counter import FingerCounter
 import cv2
 
 #file_name = "test.MOV"
@@ -17,7 +16,7 @@ def files(path):
 
 if __name__ == "__main__":
     data_dir = "../data/"
-    output_dir = "../data/output/"
+    output_dir = data_dir + "plot/"
     folders = ['smallP/']
     pattern = "*.MOV"
 
@@ -28,13 +27,10 @@ if __name__ == "__main__":
                 if fnmatch.fnmatch(f, pattern):
                     in_dir = subdir+f
                     file_name = folder + 'out' + f
-                    skin_out_dir = output_dir\
-                            + "skin/" + file_name
-                    #bgs_out_dir = output_dir\
-                    #        +"bgs/" + file_name
-                    fc_skin = FC.FingerCounter("skin",\
-                            in_dir, skin_out_dir)
-                    fc_skin.play_game()
+                    plot_name = output_dir + f[0:len(f)-4] + ".png"
+                    fc = FingerCounter("skin",\
+                            in_dir, plot_name)
+                    fc.play_game()
                     #fc_bgs = FC.FingerCounter("background",\
                     #        in_dir, bgs_out_dir)
                     #fc_bgs.play_game()
