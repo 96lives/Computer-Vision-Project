@@ -1,7 +1,7 @@
 import os 
 import fnmatch
 import skin_detection as sd
-from finger_counter import FingerCounter
+from finger_counter_tester import FingerCounterTester
 import cv2
 
 #file_name = "test.MOV"
@@ -16,20 +16,18 @@ def files(path):
 
 if __name__ == "__main__":
     data_dir = "../data/"
-    output_dir = data_dir + "plot/"
+    out_dir = data_dir + "plot/"
     folders = ['P/', 'R/', 'S/']
     pattern = "*.MOV"
 
     for folder in folders:
-        subdir = data_dir + folder
         if os.path.exists(subdir):
             for f in files(subdir):
                 if fnmatch.fnmatch(f, pattern):
-                    in_dir = subdir+f
+                    in_dir = subdir
                     file_name = folder + 'out' + f
-                    plot_name = output_dir +\
-                            f[0:len(f)-4] + ".png"
-                    fc = FingerCounter("skin",\
-                            in_dir, plot_name)
+                    fc = FingerCounterTester(f, \
+                            "report.txt", in_dir, \
+                            out_dir)
                     fc.play_game()
                 
