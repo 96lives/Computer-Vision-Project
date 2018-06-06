@@ -114,7 +114,7 @@ class Shaker():
 		num_min, num_max = self.local_minmax(self.yhistory, binary, frame)
 		if num_min + num_max is not 0: 
 			print('local : ' + str(num_min) + ', ' + str(num_max))
-		if num_min + num_max >= 3: # and self.yhistory[-1] < max(self.minima) + 15:
+		if num_min + num_max >= 4: # and self.yhistory[-1] < max(self.minima) + 15:
 			return True
 		self.prev_binary = binary
 		return False
