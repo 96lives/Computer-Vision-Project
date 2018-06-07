@@ -7,6 +7,7 @@ import time
 from visualize import visualizer
 from skin_color_classifier import SkinColorClassifier
 
+frame_size = (240, 180)
 class WebFingerCounter():
 
     def __init__(self, report_name, \
@@ -23,9 +24,8 @@ class WebFingerCounter():
         shake_ended = False
         vis = visualizer()
 
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(1)
         frame_cnt = 0
-        frame_size = (320, 240)
 
         if self.save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID') 
@@ -80,8 +80,8 @@ class WebFingerCounter():
             
             if shake_switch is False:
                 shake_ended = shaker.shake_detect(mask, frame)
-            out.write(frame)
-            out_mask.write(mask)
+            #out.write(frame)
+            out_mask.write(cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR))
             frame = vis.visualize(frame, finger_cnt, decision_cnt, True)
             cv2.imshow('frame', frame)
             k = cv2.waitKey(5) & 0xFF
@@ -90,6 +90,7 @@ class WebFingerCounter():
         
         if self.save_video:
             out.release()
+            out_mask.release()
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')
         
