@@ -44,6 +44,7 @@ class FingerCounter():
         avg = 0
         decision_cnt = 0 
         rps = 'r'
+        skip_frames = 8
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -83,20 +84,10 @@ class FingerCounter():
             else:
                 mask = sd.detect_skin(frame)
 
-                if decision_cnt == skip_frames:
-                    mu = finger_cnt
-                elif decision_cnt > skip_frames:
-                    mu = alpha * finger_cnt + (1-alpha) * mu
-                    cnt_list.append(mu)
-                    
-                    if mu > 1.9 and rps in ['r','s']:
-                        rps = 'p'
-                    elif mu > 0.9 and rps is 'r':
-                        rps = 's'
-
             if shake_switch is False:
                 shake_ended = shaker.shake_detect(mask, frame)
-            frame = vis.show_rps(frame, rps)
+
+            frame = vis.visualize(frame, finger_cnt, decision_cnt > skip_frames)
             cv2.imshow('frame', frame)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
