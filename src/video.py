@@ -5,6 +5,7 @@ from finger_counter import FingerCounter
 from new_finger_counter import NewFingerCounter
 import cv2
 import matplotlib.pyplot as plt
+import time
 
 def files(path):
     for file in os.listdir(path):
@@ -32,10 +33,7 @@ if __name__ == "__main__":
                             "report.txt", in_dir, \
                             out_dir)
                     cnt_list = fc.play_game()
-                    # if len(cnt_list) != 0:
-                    #     print(cnt_list)
-                    #     print(len(cnt_list))
-                    #     plt.plot(cnt_list)
+                    #time.sleep(2)
                     cnt += 1    
                     total_cnt += 1
         plt.savefig(subdir+"finger_cnts.png")

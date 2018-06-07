@@ -48,7 +48,7 @@ class SkinColorClassifier():
     def collect_neg_data(self, img, and_mask):
         
         img = cv2.bitwise_and(img, img, mask=and_mask)
-        #cv2.imwrite(out_dir + "neg_data.jpg", img)
+        cv2.imwrite(out_dir + "neg_data.jpg", img)
         and_mask = and_mask.reshape(-1, 1)
         img = img.reshape(-1, 3)
         neg_bool = np.nonzero(and_mask)
@@ -59,7 +59,7 @@ class SkinColorClassifier():
         pos_mask = img_mask - and_mask
         pos_mask[pos_mask < 0] = 0
         pos_img = cv2.bitwise_and(img, img, mask=pos_mask)
-        #cv2.imwrite(out_dir + "pos_data.jpg", pos_img)
+        cv2.imwrite(out_dir + "pos_data.jpg", pos_img)
         img = pos_img.reshape(-1, 3)
         pos_mask = pos_mask.reshape(-1, 1)
         pos_bool = np.nonzero(pos_mask)

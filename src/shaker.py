@@ -51,8 +51,9 @@ class Shaker():
 	def local_minmax(self, arr, binary, frame):
 		num_min = 0
 		num_max = 0
-		start_amplitude = 10
-		amplitude = 12
+		h, w = binary.shape
+		start_amplitude = 10 / 240 * h
+		amplitude = 12 / 240 * h
 		mini = 9999
 		maxi = -9999
 		find = 'start' # find min/max

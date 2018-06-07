@@ -34,13 +34,13 @@ class visualizer():
         return np.concatenate(im, axis = 1)
 
     def show_rps(self, image, rps):
-        
+        ratio = image.shape[1] / rps.shape[1]
         if rps == 'r':
-            rpsimg = cv2.resize(self.r, (image.shape[1], self.r.shape[0]))
+            rpsimg = cv2.resize(self.r, (image.shape[1], self.r.shape[0]*ratio))
         elif rps == 's':
-            rpsimg = cv2.resize(self.s, (image.shape[1], self.s.shape[0]))
+            rpsimg = cv2.resize(self.s, (image.shape[1], self.s.shape[0]*ratio))
         elif rps == 'p':
-            rpsimg = cv2.resize(self.p, (image.shape[1], self.p.shape[0]))
+            rpsimg = cv2.resize(self.p, (image.shape[1], self.p.shape[0]*ratio))
         image = np.concatenate((image, rpsimg), axis = 0)
         return image
 
