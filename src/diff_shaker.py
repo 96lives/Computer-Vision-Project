@@ -4,7 +4,7 @@ import skin_detection as sd
 
 
 
-class Shaker2():
+class DiffShaker():
 
     def __init__(self):
         self.shaker = Shaker()

@@ -82,6 +82,9 @@ class SkinColorClassifier():
         skin_idx = np.nonzero(np.array(logits) == 1)
         out[candidates[skin_idx]] = 255
         out = out.reshape(w, h)
+        kernel= cv2.getStructuringElement(\
+                cv2.MORPH_ELLIPSE,(5,5))
+        out = cv2.erode(out, kernel, iterations = 1)    
         return out
 
 if __name__ == '__main__':
