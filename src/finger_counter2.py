@@ -139,6 +139,7 @@ def put_text_in_frame(frame, arg):
             , 4, (255, 255, 255), 2)
      
 
+    new_frame = abs(curr_frame - prev_frame)
 def count_finger(frame, mask):
     if mask is None:
         return frame, 0
