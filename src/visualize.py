@@ -34,27 +34,34 @@ class visualizer():
         return np.concatenate(im, axis = 1)
 
     def show_rps(self, image, rps):
-        ratio = image.shape[1] / rps.shape[1]
+        ratio = image.shape[1] / self.r.shape[1]
         if rps == 'r':
-            rpsimg = cv2.resize(self.r, (image.shape[1], self.r.shape[0]*ratio))
+            rpsimg = cv2.resize(self.r, (image.shape[1], round(self.r.shape[0]*ratio)))
         elif rps == 's':
-            rpsimg = cv2.resize(self.s, (image.shape[1], self.s.shape[0]*ratio))
+            rpsimg = cv2.resize(self.s, (image.shape[1], round(self.s.shape[0]*ratio)))
         elif rps == 'p':
-            rpsimg = cv2.resize(self.p, (image.shape[1], self.p.shape[0]*ratio))
+            rpsimg = cv2.resize(self.p, (image.shape[1], round(self.p.shape[0]*ratio)))
         image = np.concatenate((image, rpsimg), axis = 0)
         return image
 
-    def visualize(self, image, finger_cnt, decision_cnt):
+    def visualize(self, image, finger_cnt, decision_cnt, refresh = False):
         alpha = 0.3
         skip_frames = 8
         if decision_cnt > skip_frames:
             self.mu = alpha * finger_cnt + (1-alpha) * self.mu
             self.cnt_list.append(self.mu)
-
-            if self.mu > 1.9 and self.rps in ['r','s']:
-                self.rps = 'p'
-            elif self.mu > 0.9 and self.rps is 'r':
-                self.rps = 's'
+            if not refresh:
+                if self.mu > 1.9 and self.rps in ['r','s']:
+                    self.rps = 'p'
+                elif self.mu > 0.9 and self.rps is 'r':
+                    self.rps = 's'
+            else:
+                if self.mu > 1.9:
+                    self.rps = 'p'
+                elif self.mu > 0.9:
+                    self.rps = 's'
+                else:
+                    self.rps = 'r'
         return self.show_rps(image, self.rps)
     
 if __name__ == '__main__':

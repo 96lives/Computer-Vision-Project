@@ -70,6 +70,7 @@ class WebFingerCounter():
 
                 mask = scc.mask_image(frame)
                 mask = sd.morphological_transform(mask)
+                cv2.imshow('scc mask',mask)
                 frame, finger_cnt = count_finger(frame, mask)
                 print(finger_cnt)
                 
@@ -81,7 +82,7 @@ class WebFingerCounter():
                 shake_ended = shaker.shake_detect(mask, frame)
             out.write(frame)
             out_mask.write(mask)
-            frame = vis.visualize(frame, finger_cnt, decision_cnt)
+            frame = vis.visualize(frame, finger_cnt, decision_cnt, True)
             cv2.imshow('frame', frame)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
