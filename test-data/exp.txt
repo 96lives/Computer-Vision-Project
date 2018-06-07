@@ -1,0 +1,29 @@
+P
+
+FC : ooxoooooxxoooooxoooxoooooxxoxxoxooo : 25/35
+NFC: ooxoooooxxooxooxoooxoooooxxooxooooo : 26/35
+
+R
+
+FC : oxooxooxoxxxoxxxxoooooxooxooxooooxoxx : 21/37
+NFC: oxoxxxxxxxxoxxxxoxooooxoxxxxxoxxxxoxo : 12/37
+
+S
+
+FC : xooxooxxxoxoxxooxoxxoxoooxoxxoxoxxoooox : 20/39
+NFC: xxoxooxxxxoxxoooxoxxxooooxoxxxooxooxoox: 19/39
+
+hardP
+
+FC : xxoxxoxxxxoxoxxxxo : 5/18
+NFC: xxoxxoxxxxoxoxooxx : 4/18
+
+hardR
+
+FC : xxxxxxoxxxxxxxoxoxxxxxx : 3/23
+NFC: xxxxxxxoxxxxxxxxxxxxxxx : 1/23
+
+hardS
+
+FC : xxxooxoxxxxxxxxoxxxxxxo : 2/23
+NFC: xoxxxxoxxxxxxoxxxxoxxxo : 4/23
