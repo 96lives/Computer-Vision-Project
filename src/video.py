@@ -1,7 +1,7 @@
 import os 
 import fnmatch
 import skin_detection as sd
-from finger_counter2 import FingerCounter2
+from finger_counter import FingerCounter
 import cv2
 import matplotlib.pyplot as plt
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
                 if fnmatch.fnmatch(f, pattern):
                     in_dir = subdir
                     file_name = folder + 'out' + f
-                    fc = FingerCounter2(f, \
+                    fc = FingerCounter(f, \
                             "report.txt", in_dir, \
                             out_dir)
                     cnt_list = fc.play_game()

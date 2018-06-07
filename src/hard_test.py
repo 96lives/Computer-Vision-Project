@@ -14,7 +14,7 @@ def render_frame(frame):
     frame = cv2.resize(frame, frame_size)
     frame = cv2.flip(frame, 0)
     frame = cv2.flip(frame, 1)
-    frame = cv2.medianBlur(frame, 21)
+    frame = cv2.medianBlur(frame, 9)
     return frame
 
 def erode_frame(mask):
@@ -22,7 +22,7 @@ def erode_frame(mask):
     kernel_ellipse5= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 
     kernel_ellipse3= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
-    out = cv2.erode(mask,kernel_ellipse7,iterations = 1)    
+    out = cv2.erode(mask,kernel_ellipse5,iterations = 1)    
     #dilation = cv2.dilate(erosion,kernel_ellipse5,iterations = 1)
     
     #kernel_ellipse3= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
@@ -36,7 +36,7 @@ def erode_frame(mask):
 if __name__ == "__main__":
 
     video_dir = "../data/hardP/"
-    video_name = "IMG_0162.MOV"
+    video_name = "IMG_0050.MOV"
     out_dir = "../data/"
 
     cap = cv2.VideoCapture(video_dir + video_name)
