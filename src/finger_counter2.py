@@ -6,6 +6,7 @@ import shaker2 as sh
 import matplotlib.pyplot as plt
 import time
 from skin_color_classifier import SkinColorClassifier
+from visualize import visualizer
 
 
 class FingerCounter3():
@@ -25,7 +26,8 @@ class FingerCounter3():
         shaker = sh.Shaker()
         shake_switch = False
         shake_ended = False
-        scc = None
+        cnt_list = []
+        vis = visualizer()
 
         cap = cv2.VideoCapture(self.in_dir+self.video_name)
         frame_cnt = 0
@@ -41,6 +43,10 @@ class FingerCounter3():
                     fourcc, round(cap.get(5)), \
                     frame_size)
         
+        avg = 0
+        decision_cnt = 0 
+        rps = 'r'
+
         while cap.isOpened():
             ret, frame = cap.read()
             frame_cnt += 1
@@ -52,6 +58,13 @@ class FingerCounter3():
             frame = cv2.flip(frame, 0)
             frame = cv2.flip(frame, 1)
             
+
+            mask = sd.detect_skin(frame)
+            #cv2.imshow('mask', mask)
+
+            if self.save_video:
+                out.write(cv2.cvtColor(mask,\
+                    cv2.COLOR_GRAY2BGR))
 
             if shake_ended is True:
                 if shake_switch is False:
@@ -72,22 +85,33 @@ class FingerCounter3():
             else:
                 mask = sd.detect_skin(frame)
 
-            cv2.imshow('mask', mask)
+                if decision_cnt == skip_frames:
+                    mu = finger_cnt
+                elif decision_cnt > skip_frames:
+                    mu = alpha * finger_cnt + (1-alpha) * mu
+                    cnt_list.append(mu)
+                    
+                    if mu > 1.9 and rps in ['r','s']:
+                        rps = 'p'
+                    elif mu > 0.9 and rps is 'r':
+                        rps = 's'
 
+                # if finger_cnt == 0:
+                #     print("Rock")
+                # elif finger_cnt == 1:
+                #     print("Scissor")
+                # else: 
+                #     print("Paper")
 
             if shake_switch is False:
                 shake_ended = shaker.shake_detect(mask, frame)
-            
-            if self.save_video:
-                out.write(cv2.cvtColor(mask,\
-                    cv2.COLOR_GRAY2BGR))
-
-
+            frame = vis.show_rps(frame, rps)
             cv2.imshow('frame', frame)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
         
+        #time.sleep(2)
         f.write('\n')
         f.close()
         if self.save_video:

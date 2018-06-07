@@ -31,18 +31,17 @@ class visualizer():
 
     def show_rps(self, image, rps):
         if rps == 'r':
-            image = np.concatenate((image, self.r/255.0), axis = 0)
+            image = np.concatenate((image, self.r), axis = 0)
         elif rps == 's':
-            image = np.concatenate((image, self.s/255.0), axis = 0)
+            image = np.concatenate((image, self.s), axis = 0)
         elif rps == 'p':
-            image = np.concatenate((image, self.p/255.0), axis = 0)
-        cv2.imshow('image', img)
-        cv2.waitKey(0)
+            image = np.concatenate((image, self.p), axis = 0)
+        return image
     
 if __name__ == '__main__':
     v = visualizer()
-    im = np.random.rand(240, 320, 3)
+    im = np.random.rand(240, 320, 3)*255
     img = v.show_rps(im, 'r')
     cv2.imshow('image', img)
-    cv2.waitKey(10000)
+    cv2.waitKey(1000)
 
