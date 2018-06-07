@@ -26,10 +26,21 @@ class Shaker():
 		self.frame_1 = None
 		self.frame_2 = None
 		self.frame_3 = None
-	
+
+		#self.bgModel = cv2.createBackgroundSubtractorMOG2(2147483647, 0.5)
+
+	def removeBG(self, frame):
+		# apply background subtractor and erode
+		fgmask = self.bgModel.apply(frame, learningRate = 0.0000)
+		kernel = np.ones((3, 3), np.uint8)
+		fgmask = cv2.erode(fgmask, kernel, iterations=1)
+		res = cv2.bitwise_and(frame, frame, mask=fgmask)
+		return res
+
 	def local_minmax(self, arr, binary, frame):
 		num_min = 0
 		num_max = 0
+		#cnt = cv2.countNonZero(binary)
 		start_amplitude = 10
 		amplitude = 12
 		mini = 9999
@@ -46,7 +57,7 @@ class Shaker():
 			for i in range(max(self.start_frame,0), len(arr)-2): # minimum: slower
 				#print(find)
 				if find == 'start':
-					if (arr[i] > start + start_amplitude) and arr[i-1] >= arr[i]:
+					if (arr[i] > start + start_amplitude) and arr[i-1] > arr[i]:
 						num_max += 1
 						maxi = arr[i]
 						find = 'min'
@@ -54,7 +65,7 @@ class Shaker():
 						if self.max_image is None:
 							self.max_image = self.frame_3
 							print('max saved: {} , frame {}'.format(maxi, i))
-					elif (arr[i] < start - start_amplitude) and arr[i-1] <= arr[i]:
+					elif (arr[i] < start - start_amplitude) and arr[i-1] < arr[i]:
 						num_min += 1
 						mini = arr[i]
 						find = 'max'
@@ -65,15 +76,22 @@ class Shaker():
 						self.minima.append(arr[i])
 
 				elif find == 'max':
-					if (arr[i] > mini + amplitude) and arr[i-1] >= arr[i]:
+					if (arr[i] > mini + amplitude) and arr[i-1] > arr[i]:
 						num_max += 1
 						maxi = arr[i]
 						find = 'min'
 						if self.max_image is None:
 							self.max_image = self.frame_3
 							print('max saved: {} , frame {}'.format(maxi, i))
+					elif (arr[i] < mini - amplitude*2) and arr[i-1] < arr[i]:
+						num_min += 1
+						mini = arr[i]
+						if self.min_image is None:
+							self.min_image = self.frame_3
+							print('min saved: {} , frame {}'.format(mini, i))
+						self.minima.append(arr[i])
 				elif find == 'min':
-					if (arr[i] < maxi - amplitude) and arr[i-1] <= arr[i]:
+					if (arr[i] < maxi - amplitude) and arr[i-1] < arr[i]:
 						num_min += 1
 						mini = arr[i]
 						find = 'max'
@@ -81,6 +99,12 @@ class Shaker():
 							self.min_image = self.frame_3
 							print('min saved: {} , frame {}'.format(mini, i))
 						self.minima.append(arr[i])
+					if (arr[i] > maxi + amplitude*2) and arr[i-1] > arr[i]:
+						num_max += 1
+						maxi = arr[i]
+						if self.max_image is None:
+							self.max_image = self.frame_3
+							print('max saved: {} , frame {}'.format(maxi, i))
 			self.smoothed = arr
 			return num_min, num_max
 		return 0, 0
@@ -91,6 +115,12 @@ class Shaker():
 		weighted_y_sum = 0
 		weighted_x_sum = 0
 		ratio = 0.05
+
+		#res = self.removeBG(frame)
+		#res = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
+		#binary = cv2.threshold(res,127,255,cv2.THRESH_BINARY)
+		#binary = np.array(binary)
+
 		idx = np.argwhere(binary > 0)
 		cnt = len(idx)
 		for i in idx:
