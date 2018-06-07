@@ -1,15 +1,13 @@
 import cv2
 import math
 import skin_detection as sd
-import background_subtractor as bg
 import shaker2 as sh
 import matplotlib.pyplot as plt
 import time
 from skin_color_classifier import SkinColorClassifier
-from visualize import visualizer
 
 
-class FingerCounter3():
+class FingerCounter():
 
     def __init__(self, video_name, \
             report_name, in_dir, \
@@ -23,18 +21,16 @@ class FingerCounter3():
 
     def play_game(self):
 
-        shaker = sh.Shaker()
+        shaker = sh.Shaker2()
         shake_switch = False
         shake_ended = False
         cnt_list = []
-        vis = visualizer()
 
         cap = cv2.VideoCapture(self.in_dir+self.video_name)
         frame_cnt = 0
         f = open(self.out_dir + self.report_name, 'a')
         f.write(self.video_name + ": ")
         pure_video_name = self.video_name.replace('.MOV', '')
-        frame_size = (320, 240)
 
         if self.save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID') 
@@ -45,22 +41,22 @@ class FingerCounter3():
         
         avg = 0
         decision_cnt = 0 
-        rps = 'r'
+        
+        ret, prev_frame = cap.read()
+        prev_frame = render_frame(prev_frame)
 
         while cap.isOpened():
-            ret, frame = cap.read()
+
+            ret, curr_frame = cap.read()
             frame_cnt += 1
 
             if ret is False:
                 break
-            frame = cv2.resize(frame, frame_size)
-
-            frame = cv2.flip(frame, 0)
-            frame = cv2.flip(frame, 1)
             
+            curr_frame = render_frame(curr_frame)
 
-            mask = sd.detect_skin(frame)
-            #cv2.imshow('mask', mask)
+            mask = sd.detect_skin(curr_frame)
+            cv2.imshow('mask', mask)
 
             if self.save_video:
                 out.write(cv2.cvtColor(mask,\
@@ -75,66 +71,82 @@ class FingerCounter3():
                     cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
                     cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
                     f.write(str(frame_cnt))
-                    scc = SkinColorClassifier(img1, img2)
-
-                mask = scc.mask_image(frame)
-                mask = sd.morphological_transform(mask)
-                frame, finger_cnt = count_finger(frame, mask)
-                print(finger_cnt)
                 
-            else:
-                mask = sd.detect_skin(frame)
+                decision_cnt += 1    
+                curr_frame, finger_cnt \
+                        = count_finger(curr_frame, mask)
+                skip_frames = 10
+                alpha = 0.3
 
                 if decision_cnt == skip_frames:
                     mu = finger_cnt
                 elif decision_cnt > skip_frames:
                     mu = alpha * finger_cnt + (1-alpha) * mu
                     cnt_list.append(mu)
-                    
-                    if mu > 1.9 and rps in ['r','s']:
-                        rps = 'p'
-                    elif mu > 0.9 and rps is 'r':
-                        rps = 's'
+                if finger_cnt == 0:
+                    print("Rock")
+                elif finger_cnt == 1:
+                    print("Scissor")
+                else: 
+                    print("Paper")
+        
 
-                # if finger_cnt == 0:
-                #     print("Rock")
-                # elif finger_cnt == 1:
-                #     print("Scissor")
-                # else: 
-                #     print("Paper")
 
+                print(finger_cnt)
+    
             if shake_switch is False:
-                shake_ended = shaker.shake_detect(mask, frame)
-            frame = vis.show_rps(frame, rps)
-            cv2.imshow('frame', frame)
+                shake_ended = \
+                        shaker.shake_detect(prev_frame, curr_frame)
+
+            cv2.imshow('frame', curr_frame)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
         
-        #time.sleep(2)
+            prev_frame = curr_frame
+
         f.write('\n')
         f.close()
         if self.save_video:
             out.release()
-        plt.plot(shaker.yhistory)
-        plt.ylabel('avg y')
+        #plt.plot(shaker.yhistory)
+        #plt.ylabel('avg y')
         
-        plt.plot(shaker.smoothed)
-        plt.ylabel('smoothed')
-        plt.savefig(self.out_dir + pure_video_name + "_plot.png")
-        plt.clf()
+        #plt.plot(shaker.smoothed)
+        #plt.ylabel('smoothed')
+        #plt.savefig(self.out_dir + pure_video_name + "_plot.png")
+        #plt.clf()
+
+        #plt.plot(cnt_list)
+        #plt.savefig(self.out_dir + pure_video_name + \
+        #        "_finger_plot.png")
+        #plt.clf()
+
         cap.release()
         cv2.destroyAllWindows()
-        if shake_switch:
-            return 1
-        else:
-            return 0
+        return cnt_list
+
+
+def render_frame(frame):
+        
+    frame_size = (320, 240)
+    frame = cv2.resize(frame, frame_size)
+    frame = cv2.flip(frame, 0)
+    frame = cv2.flip(frame, 1)
+    return frame
+    
 
 class UnavailableModeError(Exception):
     
     def __str__(self):
         return "only 'skin' or 'background' is available"
 
+def put_text_in_frame(frame, arg):
+    cv2.putText(frame, arg, (0,0), cv2.FONT_HERSHEY_SIMPLEX\
+            , 4, (255, 255, 255), 2)
+     
+
+    new_frame = abs(curr_frame - prev_frame)
 def count_finger(frame, mask):
     if mask is None:
         return frame, 0
@@ -167,7 +179,7 @@ def count_finger(frame, mask):
     return frame, 0
 
 def find_max_contour(mask):
-    
+ 
     _, contours, hierarchy = cv2.findContours(mask,\
             cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     #Find Max contour area (Assume that hand is in the frame)
