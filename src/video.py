@@ -2,8 +2,10 @@ import os
 import fnmatch
 import skin_detection as sd
 from finger_counter import FingerCounter
+from new_finger_counter import NewFingerCounter
 import cv2
 import matplotlib.pyplot as plt
+import time
 
 def files(path):
     for file in os.listdir(path):
@@ -13,7 +15,7 @@ def files(path):
 if __name__ == "__main__":
     data_dir = "../data/"
     out_dir = data_dir + "plot/"
-    folders = ['P/', 'R/', 'S/']
+    folders = ['hardP/', 'hardR/', 'hardS/']
     pattern = "*.MOV"
     
     total_cnt = 0
@@ -27,14 +29,11 @@ if __name__ == "__main__":
                 if fnmatch.fnmatch(f, pattern):
                     in_dir = subdir
                     file_name = folder + 'out' + f
-                    fc = FingerCounter(f, \
+                    fc = NewFingerCounter(f, \
                             "report.txt", in_dir, \
                             out_dir)
                     cnt_list = fc.play_game()
-                    # if len(cnt_list) != 0:
-                    #     print(cnt_list)
-                    #     print(len(cnt_list))
-                    #     plt.plot(cnt_list)
+                    #time.sleep(2)
                     cnt += 1    
                     total_cnt += 1
         plt.savefig(subdir+"finger_cnts.png")

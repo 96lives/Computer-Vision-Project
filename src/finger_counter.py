@@ -7,6 +7,9 @@ import time
 from visualize import visualizer
 
 
+#frame_size = (320, 240)
+frame_size = (240, 180)
+
 class FingerCounter():
 
     def __init__(self, video_name, \
@@ -31,7 +34,6 @@ class FingerCounter():
         f = open(self.out_dir + self.report_name, 'a')
         f.write(self.video_name + ": ")
         pure_video_name = self.video_name.replace('.MOV', '')
-        frame_size = (320, 240)
 
         if self.save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID') 
@@ -70,10 +72,9 @@ class FingerCounter():
                     #time.sleep(2)
                     shake_switch = True
                     img1, img2 = shaker.get_minmax_image()
-                    cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
-                    cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
-                    f.write(str(frame_cnt))
-                    #scc = SkinColorClassifier(img1, img2)
+                    #cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
+                    #cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
+                    #f.write(str(frame_cnt))
 
                 #mask = scc.mask_image(frame)
                 mask = sd.morphological_transform(mask)
@@ -92,8 +93,8 @@ class FingerCounter():
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
-        
-        #time.sleep(2)
+
+        time.sleep(2)
         f.write('\n')
         f.close()
         if self.save_video:
