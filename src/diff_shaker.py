@@ -28,7 +28,10 @@ class DiffShaker():
         return self.shaker.shake_detect(diff, copy) 
 
     def get_minmax_image(self):
-        return self.shaker.get_minmax_image()
+        out = self.shaker.get_minmax_image()
+        self.yhistory = self.shaker.yhistory
+        self.smoothed = self.shaker.smoothed
+        return out
 
 
 def abs_diff(f1, f2):

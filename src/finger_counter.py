@@ -109,6 +109,8 @@ class FingerCounter():
             out.release()
         plt.plot(shaker.yhistory)
         plt.ylabel('avg y')
+        print("ZZZ")
+        print(shaker.yhistory)
         
         plt.plot(shaker.smoothed)
         plt.ylabel('smoothed')

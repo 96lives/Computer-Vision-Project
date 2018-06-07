@@ -93,18 +93,18 @@ class NewFingerCounter():
         f.close()
         if self.save_video:
             out.release()
-        #plt.plot(shaker.yhistory)
-        #plt.ylabel('avg y')
+        plt.plot(shaker.yhistory)
+        plt.ylabel('avg y')
         
-        #plt.plot(shaker.smoothed)
-        #plt.ylabel('smoothed')
-        #plt.savefig(self.out_dir + pure_video_name + "_plot.png")
-        #plt.clf()
+        plt.plot(shaker.smoothed)
+        plt.ylabel('smoothed')
+        plt.savefig(self.out_dir + pure_video_name + "_plot.png")
+        plt.clf()
 
-        #plt.plot(cnt_list)
-        #plt.savefig(self.out_dir + pure_video_name + \
-        #        "_finger_plot.png")
-        #plt.clf()
+        plt.plot(cnt_list)
+        plt.savefig(self.out_dir + pure_video_name + \
+                "_finger_plot.png")
+        plt.clf()
 
         cap.release()
         cv2.destroyAllWindows()
