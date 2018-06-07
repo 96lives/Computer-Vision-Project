@@ -34,12 +34,14 @@ class visualizer():
         return np.concatenate(im, axis = 1)
 
     def show_rps(self, image, rps):
+        
         if rps == 'r':
-            image = np.concatenate((image, self.r), axis = 0)
+            rpsimg = cv2.resize(self.r, (image.shape[1], self.r.shape[0]))
         elif rps == 's':
-            image = np.concatenate((image, self.s), axis = 0)
+            rpsimg = cv2.resize(self.s, (image.shape[1], self.s.shape[0]))
         elif rps == 'p':
-            image = np.concatenate((image, self.p), axis = 0)
+            rpsimg = cv2.resize(self.p, (image.shape[1], self.p.shape[0]))
+        image = np.concatenate((image, rpsimg), axis = 0)
         return image
 
     def visualize(self, image, finger_cnt, decision_cnt):

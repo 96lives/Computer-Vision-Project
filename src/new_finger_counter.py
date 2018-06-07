@@ -5,8 +5,10 @@ import diff_shaker as sh
 import matplotlib.pyplot as plt
 import time
 from skin_color_classifier import SkinColorClassifier
+from visualize import visualizer
 
-frame_size = (320, 240)
+frame_size = (240, 180)
+#frame_size = (320, 240)
 
 class NewFingerCounter():
 
@@ -27,6 +29,7 @@ class NewFingerCounter():
         shake_switch = False
         shake_ended = False
         cnt_list = []
+        vis = visualizer()
 
         cap = cv2.VideoCapture(self.in_dir+self.video_name)
         frame_cnt = 0
@@ -34,6 +37,7 @@ class NewFingerCounter():
         f.write(self.video_name + ": ")
         pure_video_name = self.video_name.replace('.MOV', '')
         decision_cnt = 0
+        finger_cnt = 0
 
         if self.save_video:
             fourcc = cv2.VideoWriter_fourcc(*'XVID') 
@@ -69,25 +73,28 @@ class NewFingerCounter():
                     scc = SkinColorClassifier(img1, img2)
                 start_time = time.time()
                 mask = scc.mask_image(curr_frame)
+                curr_frame, finger_cnt = count_finger(curr_frame, mask)
                 print(time.time() - start_time)
             else:
                 mask = sd.detect_skin(curr_frame)
+                decision_cnt += 1
 
+            if shake_switch is False:
+                mask, shake_ended = \
+                        shaker.shake_detect(prev_frame, curr_frame)
             cv2.imshow('mask', mask)
             if self.save_video:
                 out.write(cv2.cvtColor(mask,\
-                    cv2.COLOR_GRAY2BGR))
+                        cv2.COLOR_GRAY2BGR))
 
-            if shake_switch is False:
-                shake_ended = \
-                        shaker.shake_detect(prev_frame, curr_frame)
 
+            prev_frame = curr_frame
+            
+            curr_frame = vis.visualize(curr_frame, finger_cnt, decision_cnt)
             cv2.imshow('frame', curr_frame)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
-        
-            prev_frame = curr_frame
 
         f.write('\n')
         f.close()
