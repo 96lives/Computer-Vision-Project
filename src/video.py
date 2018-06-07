@@ -31,10 +31,10 @@ if __name__ == "__main__":
                             "report.txt", in_dir, \
                             out_dir)
                     cnt_list = fc.play_game()
-                    if len(cnt_list) != 0:
-                        print(cnt_list)
-                        print(len(cnt_list))
-                        plt.plot(cnt_list)
+                    # if len(cnt_list) != 0:
+                    #     print(cnt_list)
+                    #     print(len(cnt_list))
+                    #     plt.plot(cnt_list)
                     cnt += 1    
                     total_cnt += 1
         plt.savefig(subdir+"finger_cnts.png")

@@ -24,7 +24,6 @@ class FingerCounter():
         shaker = sh.Shaker()
         shake_switch = False
         shake_ended = False
-        cnt_list = []
         vis = visualizer()
 
         cap = cv2.VideoCapture(self.in_dir+self.video_name)
@@ -43,8 +42,8 @@ class FingerCounter():
         
         avg = 0
         decision_cnt = 0 
+        finger_cnt = 0
         rps = 'r'
-        skip_frames = 8
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -74,20 +73,21 @@ class FingerCounter():
                     cv2.imwrite(self.out_dir + pure_video_name + '_max.jpg', img1)
                     cv2.imwrite(self.out_dir + pure_video_name + '_min.jpg', img2)
                     f.write(str(frame_cnt))
-                    scc = SkinColorClassifier(img1, img2)
+                    #scc = SkinColorClassifier(img1, img2)
 
-                mask = scc.mask_image(frame)
+                #mask = scc.mask_image(frame)
                 mask = sd.morphological_transform(mask)
                 frame, finger_cnt = count_finger(frame, mask)
                 print(finger_cnt)
                 
             else:
                 mask = sd.detect_skin(frame)
+                decision_cnt += 1
 
             if shake_switch is False:
                 shake_ended = shaker.shake_detect(mask, frame)
 
-            frame = vis.visualize(frame, finger_cnt, decision_cnt > skip_frames)
+            frame = vis.visualize(frame, finger_cnt, decision_cnt)
             cv2.imshow('frame', frame)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:

@@ -11,6 +11,7 @@ class visualizer():
 
         self.cnt_list = []
         self.mu = 0
+        self.rps = 'r'
 
     def gray(self, rps, min, max):
         left = rps[:,0:min,:]
@@ -41,16 +42,18 @@ class visualizer():
             image = np.concatenate((image, self.p), axis = 0)
         return image
 
-    def visualize(self, image, finger_cnt, update = False):
+    def visualize(self, image, finger_cnt, decision_cnt):
         alpha = 0.3
-        if update:
-            self.mu = alpha * finger_cnt + (1-alpha) * mu
-            self.cnt_list.append(mu)
-        if mu > 1.9 and rps in ['r','s']:
-            rps = 'p'
-        elif mu > 0.9 and rps is 'r':
-            rps = 's'
-        return show_rps(image, rps)
+        skip_frames = 8
+        if decision_cnt > skip_frames:
+            self.mu = alpha * finger_cnt + (1-alpha) * self.mu
+            self.cnt_list.append(self.mu)
+
+            if self.mu > 1.9 and self.rps in ['r','s']:
+                self.rps = 'p'
+            elif self.mu > 0.9 and self.rps is 'r':
+                self.rps = 's'
+        return self.show_rps(image, self.rps)
     
 if __name__ == '__main__':
     v = visualizer()
