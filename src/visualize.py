@@ -9,6 +9,9 @@ class visualizer():
         self.s = self.gray(self.rps, 106, 201)
         self.p = self.gray(self.rps, 201, 320)
 
+        self.cnt_list = []
+        self.mu = 0
+
     def gray(self, rps, min, max):
         left = rps[:,0:min,:]
         middle = rps[:,min:max,:]
@@ -37,10 +40,21 @@ class visualizer():
         elif rps == 'p':
             image = np.concatenate((image, self.p), axis = 0)
         return image
+
+    def visualize(self, image, finger_cnt, update = False):
+        alpha = 0.3
+        if update:
+            self.mu = alpha * finger_cnt + (1-alpha) * mu
+            self.cnt_list.append(mu)
+        if mu > 1.9 and rps in ['r','s']:
+            rps = 'p'
+        elif mu > 0.9 and rps is 'r':
+            rps = 's'
+        return show_rps(image, rps)
     
 if __name__ == '__main__':
     v = visualizer()
-    im = np.random.rand(240, 320, 3)*255
+    im = np.random.rand(240, 320, 3)
     img = v.show_rps(im, 'r')
     cv2.imshow('image', img)
     cv2.waitKey(1000)
