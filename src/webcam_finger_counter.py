@@ -24,7 +24,7 @@ class WebFingerCounter():
         shake_ended = False
         vis = visualizer()
 
-        cap = cv2.VideoCapture(1)
+        cap = cv2.VideoCapture(0)
         frame_cnt = 0
 
         if self.save_video:
