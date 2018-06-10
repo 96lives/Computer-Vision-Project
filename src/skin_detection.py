@@ -5,67 +5,38 @@ import time
 
 def detect_skin(frame):
     frame = mask_skin(frame)
+    cv2.imshow('skin mask', frame)
     return morphological_transform(frame)
 
 def mask_skin(frame):
     
     # blur image
-    blur = cv2.blur(frame, (3, 3))
-    lower = np.array([0, 48, 80], dtype="uint8")
-    upper = np.array([20, 255, 255], dtype="uint8")
-    hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, lower, upper)
-    skin = cv2.bitwise_and(frame, frame, mask=mask)
-    #cv2.imshow('skin', skin)
-    return skin
-
-
-def morphological_transform(frame):
+    #blur = cv2.blur(frame, (9, 9))
+    lower = np.array([0, 48, 50], dtype="uint8")
+    upper = np.array([25, 255, 255], dtype="uint8")
     
-    # Kernel matrices for morphological transformation
-    kernel_square = np.ones((11,11),np.uint8)
-    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
-
-    #Perform morphological transformations to filter out the background noise
-    #Dilation increase skin color area
-    #Erosion increase skin color area
-    dilation = cv2.dilate(frame, kernel_ellipse,iterations = 1)
-    erosion = cv2.erode(dilation,kernel_square,iterations = 1)
-    dilation2 = cv2.dilate(erosion,kernel_ellipse,iterations = 1)
-    filtered = cv2.medianBlur(dilation2,5)
-    kernel_ellipse= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(8,8))
-    dilation2 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
-    median = cv2.medianBlur(dilation2,5)
-    ret,thres = cv2.threshold(median,127,255,0)
-
-    # check is the thres is GBR format
-    if len(thres.shape) == 3:
-        thres = cv2.cvtColor(thres, cv2.COLOR_BGR2GRAY) 
-    return thres
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv, lower, upper)
+    #skin = cv2.bitwise_and(frame, frame, mask=mask)
+    #cv2.imshow('skin', skin)
+    return mask
 
 
-def find_max_contour(thres):
- 
-    _, contours, hierarchy = cv2.findContours(thres,\
-            cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    #Find Max contour area (Assume that hand is in the frame)
-    max_area=100
-    ci=0
-    contour = -1
-    for i in range(len(contours)):
-        contour = contours[i]
-        area = cv2.contourArea(contour)
-        if(area>max_area):
-            max_area=area
-            ci=i
+def morphological_transform(mask):
 
-   #Largest area contour
-    #print(contours)
-    if (len(contours) != 0):
-        max_contour = contours[ci]
-        return max_contour
-    else:
-        return None
+    kernel_ellipse7= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(7,7))
+    kernel_ellipse5= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+    erosion = cv2.erode(mask,kernel_ellipse7,iterations = 1)    
+    dilation = cv2.dilate(erosion,kernel_ellipse5,iterations = 1)
+    
+    kernel_ellipse3= cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+    erosion = cv2.dilate(mask,kernel_ellipse3,iterations = 1)    
+    dilation = cv2.erode(erosion,kernel_ellipse5,iterations = 1)
+    median = cv2.medianBlur(dilation,5)
+    
+    if len(median.shape) == 3:
+        median = cv2.cvtColor(median, cv2.COLOR_BGR2GRAY) 
+    return median
 
 def check_finger(frame, max_contour):
     #Find contours of the filtered frame

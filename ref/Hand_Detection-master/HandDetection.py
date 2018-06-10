@@ -71,7 +71,8 @@ while(1):
     dilation3 = cv2.dilate(filtered,kernel_ellipse,iterations = 1)
     median = cv2.medianBlur(dilation2,5)
     ret,thresh = cv2.threshold(median,127,255,0)
-
+    
+    cv2.imshow('mask', thresh)
     #Find contours of the filtered frame
     _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
