@@ -32,6 +32,7 @@ class NewFingerCounter():
         vis = visualizer()
 
         cap = cv2.VideoCapture(self.in_dir+self.video_name)
+        print(self.in_dir + self.video_name)
         frame_cnt = 0
         f = open(self.out_dir + self.report_name, 'a')
         f.write(self.video_name + ": ")
@@ -119,7 +120,6 @@ class NewFingerCounter():
 
 
 def render_frame(frame):
-        
     frame = cv2.resize(frame, frame_size)
     frame = cv2.flip(frame, 0)
     frame = cv2.flip(frame, 1)
